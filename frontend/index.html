@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,21 @@
 </head>
 
 <body>
-    
+    <div class="login-container">
+        <h2>ورود به حساب کاربری</h2>
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username">نام کاربری</label>
+                <input type="text" id="username" required placeholder="نام کاربری خود را وارد کنید">
+            </div>
+            <div class="input-group">
+                <label for="password">رمز عبور</label>
+                <input type="password" id="password" required placeholder="رمز عبور خود را وارد کنید">
+            </div>
+            <button type="submit" id="submitBtn">ورود</button>
+        </form>
+        <div id="messageBox" class="message-box"></div>
+    </div>
 
 </body>
 
