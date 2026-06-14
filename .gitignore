@@ -1,0 +1,23 @@
+# === Java & Spring Boot (Backend) ===
+/backend/target/
+/backend/build/
+*.class
+*.jar
+*.war
+
+# === IDEs & Editors Configuration ===
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# === OS temporary files ===
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+
+# === Log files ===
+*.log
