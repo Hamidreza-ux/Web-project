@@ -1,0 +1,7 @@
+public enum SignupResult {
+    SUCCESS,
+    DUPLICATE_USERNAME,
+    DUPLICATE_ID,
+    INVALID_PASSWORD,
+    PASSWORD_MISMATCH
+}
