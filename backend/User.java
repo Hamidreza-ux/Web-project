@@ -11,12 +11,14 @@ public class User {
 
     public boolean passwordIsRight (String newPassword) {
         try {
-            if(this.password.equals(newPassword) ) {
-                if (failedAttempt < 5)
-                    return true ;
+            if (isLocked()) {
+                return false;
+            }
+            if (this.password.equals(newPassword)) {
+                failedAttempt = 0;
+                return true;
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         failedAttempt++ ;
