@@ -6,7 +6,8 @@ public class LoginServer {
     private String password;
     private static volatile LoginServer instance;
 
-    private final Map<String, User> registeredMap = new HashMap<>();
+    private final Map<String, User> registeredMap = new HashMap<>(); // چون هنوز به دیتابیس وصل نشدیم اطلاعات رو به صورت
+                                                                     // موقت در اینجا ذخیره میکنیم
 
     private LoginServer() {
     }
@@ -22,7 +23,7 @@ public class LoginServer {
         return instance;
     }
 
-    public synchronized LoginResult authenticate(String username, String password) {
+    public synchronized LoginResult authenticate(String username, String password) {    //synchronized برای multy threading,
         this.username = username;
         this.password = password;
         User user = registeredMap.get(this.username);

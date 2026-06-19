@@ -10,33 +10,34 @@ import java.util.regex.Pattern;
 public class LoginWebHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*"); // اجازه برای دسترسی به قسمت فرانت
         exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "POST, OPTIONS");
         exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
 
         if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
-            exchange.sendResponseHeaders(204, -1);
-            return ;
+            exchange.sendResponseHeaders(204, -1); // 204 یعنی no content یعنی تایید شدن
+            return;
         }
 
         if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
             try {
                 InputStream is = exchange.getRequestBody();
                 String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-        
+
                 String username = parseJsonFieldWhithRegex(body, "username");
-                String password = parseJsonFieldWhithRegex(body, "password");
-                
+                String password = parseJsonFieldWhithRegex(body, "password"); // استخراج username , password,
+
                 if (username.trim().isEmpty() || password.trim().isEmpty()) {
-                    sendResponse(exchange, 400, "{\"status\":\"error\", \"message\":\"نام کاربری و رمز عبور نمی‌توانند خالی باشند.\"}");
+                    sendResponse(exchange, 400,
+                            "{\"status\":\"error\", \"message\":\"نام کاربری و رمز عبور نمی‌توانند خالی باشند.\"}");
                     return;
                 }
 
                 LoginServer loginServer = LoginServer.getInstance();
                 LoginResult result = loginServer.authenticate(username, password);
 
-                int statusCode ;
-                String jsonResponse ;
+                int statusCode;
+                String jsonResponse;
 
                 switch (result) {
                     case LoginResult.SUCCESS:
@@ -62,8 +63,7 @@ public class LoginWebHandler implements HttpHandler {
 
                 sendResponse(exchange, statusCode, jsonResponse);
 
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 sendResponse(exchange, 500, "{\"status\":\"error\", \"message\":\"خطا در پردازش درخواست ورود\"}");
             }
         } else {
@@ -72,7 +72,7 @@ public class LoginWebHandler implements HttpHandler {
 
     }
 
-    private void sendResponse(HttpExchange exchange, int statusCode, String jsonResponse) throws IOException {
+    private void sendResponse(HttpExchange exchange, int statusCode, String jsonResponse) throws IOException {   //متدی برای ارسال پاسخ به فرانت
         byte[] responseBytes = jsonResponse.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
         exchange.sendResponseHeaders(statusCode, responseBytes.length);
@@ -81,18 +81,19 @@ public class LoginWebHandler implements HttpHandler {
         os.close();
     }
 
-    private String parseJsonFieldWhithRegex(String json , String field) {
+    private String parseJsonFieldWhithRegex(String json, String field) {    // متن جیسون رو استخراج میکند
         try {
-        String regex = String.format("\"%s\":\"([^\"]+)\"", field) ;
-        Pattern pattern = Pattern.compile(regex) ;
-        Matcher matcher = pattern.matcher(json) ;
+            String regex = String.format("\"%s\":\"([^\"]+)\"", field);
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(json);
 
-        if(matcher.find()) { return matcher.group(1) ; }   
+            if (matcher.find()) {
+                return matcher.group(1);
+            }
 
-        return "" ;
-        }
-        catch (Exception e) {
-            return "" ;
+            return "";
+        } catch (Exception e) {
+            return "";
         }
     }
 }

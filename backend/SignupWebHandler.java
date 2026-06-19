@@ -14,7 +14,7 @@ public class SignupWebHandler implements HttpHandler {
         exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "POST, OPTIONS");
         exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
 
-        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {   // اجازه اولیه قبل پست
             exchange.sendResponseHeaders(204, -1);
             return;
         }
@@ -52,7 +52,7 @@ public class SignupWebHandler implements HttpHandler {
                         jsonResponse = "{\"status\":\"error\", \"message\":\"رمز عبور و تکرار آن با یکدیگر مطابقت ندارند.\"}";
                         break;
                     case SignupResult.DUPLICATE_USERNAME:
-                        statusCode = 409;
+                        statusCode = 409;   //conflict
                         jsonResponse = "{\"status\":\"error\", \"message\":\"این نام کاربری قبلاً توسط شخص دیگری انتخاب شده است.\"}";
                         break;
                     case SignupResult.DUPLICATE_ID:
