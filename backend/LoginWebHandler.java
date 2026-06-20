@@ -27,7 +27,7 @@ public class LoginWebHandler implements HttpHandler {
                 String username = parseJsonFieldWhithRegex(body, "username");
                 String password = parseJsonFieldWhithRegex(body, "password"); // استخراج username , password,
 
-                if (username.trim().isEmpty() || password.trim().isEmpty()) {
+                if (username.isBlank() || password.isBlank()) {
                     sendResponse(exchange, 400,
                             "{\"status\":\"error\", \"message\":\"نام کاربری و رمز عبور نمی‌توانند خالی باشند.\"}");
                     return;

@@ -78,7 +78,7 @@ public class SignupWebHandler implements HttpHandler {
         }
     }
 
-    private void sendResponse(HttpExchange exchange, int statusCode, String jsonResponse) throws IOException {
+    public static void sendResponse(HttpExchange exchange, int statusCode, String jsonResponse) throws IOException {
         byte[] responseBytes = jsonResponse.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
         exchange.sendResponseHeaders(statusCode, responseBytes.length);
@@ -87,7 +87,7 @@ public class SignupWebHandler implements HttpHandler {
         os.close();
     }
 
-    private String parseJsonFieldWhithRegex(String json, String field) {
+    public static String parseJsonFieldWhithRegex(String json, String field) {
         try {
             String regex = String.format("\"%s\"\\s*:\\s*\"([^\"]*)\"", field);
             Pattern pattern = Pattern.compile(regex);
