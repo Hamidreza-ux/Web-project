@@ -1,12 +1,19 @@
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class LoginServer {
     private String username;
     private String password;
     private static volatile LoginServer instance;
 
-    private final Map<String, User> registeredMap = new HashMap<>();
+    private final Map<String, User> registeredMap = new HashMap<>(); // چون هنوز به دیتابیس وصل نشدیم اطلاعات کاربر رو
+                                                                     // به صورت
+                                                                     // موقت در اینجا ذخیره میکنیم
+    private final Map<String, List<ChatRoom>> userChatsMap = new ConcurrentHashMap<>(); // لیست صفحه چت ها و نام کاربری
+                                                                                        // کاربر
 
     private LoginServer() {
     }
@@ -22,7 +29,8 @@ public class LoginServer {
         return instance;
     }
 
-    public synchronized LoginResult authenticate(String username, String password) {
+    public synchronized LoginResult authenticate(String username, String password) { // synchronized برای multy
+                                                                                     // threading,
         this.username = username;
         this.password = password;
         User user = registeredMap.get(this.username);
@@ -46,6 +54,13 @@ public class LoginServer {
     }
 
     public synchronized SignupResult register(String username, String id, String password, String confirmPassword) {
+
+        List<ChatRoom> initialChats = new ArrayList<>();
+        ChatRoom savedMessages = new ChatRoom("saved_messages", "Saved Messages", "assets/saved.png");
+        savedMessages.addMessage(new ChatMessage("System", "به پیام‌های ذخیره شده خوش آمدید!"));
+        initialChats.add(savedMessages);
+        userChatsMap.put(username, initialChats);
+
         if (!password.equals(confirmPassword)) {
             return SignupResult.PASSWORD_MISMATCH;
         }
@@ -72,6 +87,60 @@ public class LoginServer {
         }
         String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,}$";
         return password.matches(regex);
+    }
+
+    public List<ChatRoom> getUserMainChats(String username, String searchQuery) {  // recieve chat list
+        List<ChatRoom> allChats = userChatsMap.getOrDefault(username, new ArrayList<>());
+        List<ChatRoom> filteredChats = new ArrayList<>();
+
+        for (ChatRoom chat : allChats) {
+            // چت‌های آرشیو شده نباید در صفحه اصلی بیایند
+            if (chat.isArchived())
+                continue;
+
+            // قابلیت جستجو بین گفتگوها (اگر کاربر چیزی سرچ کرده باشد)
+            if (searchQuery != null && !searchQuery.isBlank()) {
+                if (!chat.getName().toLowerCase().contains(searchQuery.toLowerCase())) {
+                    continue; // اگر نام چت با سرچ نخواند، ردش کن
+                }
+            }
+            filteredChats.add(chat);
+        }
+
+        filteredChats.sort((chat1, chat2) -> {
+            // pin
+            if (chat1.isPinned() && !chat2.isPinned())
+                return -1;
+            if (!chat1.isPinned() && chat2.isPinned())
+                return 1;
+
+            // date
+            ChatMessage msg1 = chat1.getLastMessage();
+            ChatMessage msg2 = chat2.getLastMessage();
+
+            if (msg1 == null && msg2 == null)
+                return 0;
+            if (msg1 == null)
+                return 1;
+            if (msg2 == null)
+                return -1;
+
+            return msg2.getTimestamp().compareTo(msg1.getTimestamp());
+        });
+
+        return filteredChats;
+    }
+
+    // آرشیو
+    public List<ChatRoom> getArchivedChats(String username) {
+        List<ChatRoom> allChats = userChatsMap.getOrDefault(username, new ArrayList<>());
+        List<ChatRoom> archived = new ArrayList<>();
+        for (ChatRoom chat : allChats) {
+            if (chat.isArchived()) {
+                archived.add(chat);
+            }
+        }
+        return archived;
     }
 
     public String getUsername() {

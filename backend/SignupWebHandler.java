@@ -14,7 +14,7 @@ public class SignupWebHandler implements HttpHandler {
         exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "POST, OPTIONS");
         exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
 
-        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {   // اجازه اولیه قبل پست
             exchange.sendResponseHeaders(204, -1);
             return;
         }
@@ -52,7 +52,7 @@ public class SignupWebHandler implements HttpHandler {
                         jsonResponse = "{\"status\":\"error\", \"message\":\"رمز عبور و تکرار آن با یکدیگر مطابقت ندارند.\"}";
                         break;
                     case SignupResult.DUPLICATE_USERNAME:
-                        statusCode = 409;
+                        statusCode = 409;   //conflict
                         jsonResponse = "{\"status\":\"error\", \"message\":\"این نام کاربری قبلاً توسط شخص دیگری انتخاب شده است.\"}";
                         break;
                     case SignupResult.DUPLICATE_ID:
@@ -78,7 +78,7 @@ public class SignupWebHandler implements HttpHandler {
         }
     }
 
-    private void sendResponse(HttpExchange exchange, int statusCode, String jsonResponse) throws IOException {
+    public static void sendResponse(HttpExchange exchange, int statusCode, String jsonResponse) throws IOException {
         byte[] responseBytes = jsonResponse.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
         exchange.sendResponseHeaders(statusCode, responseBytes.length);
@@ -87,7 +87,7 @@ public class SignupWebHandler implements HttpHandler {
         os.close();
     }
 
-    private String parseJsonFieldWhithRegex(String json, String field) {
+    public static String parseJsonFieldWhithRegex(String json, String field) {
         try {
             String regex = String.format("\"%s\"\\s*:\\s*\"([^\"]*)\"", field);
             Pattern pattern = Pattern.compile(regex);
