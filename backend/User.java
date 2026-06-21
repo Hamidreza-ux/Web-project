@@ -1,8 +1,13 @@
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+
 public class User {
     private String username;
     private String password;
     private int failedAttempt;
     private String ID;
+    private final List<Long> messageTimestamps = new ArrayList<>();
 
     public User(String username, String ID, String password) {
         this.username = username;
@@ -24,6 +29,19 @@ public class User {
             e.printStackTrace();
         }
         failedAttempt++;
+        return false;
+    }
+
+    public synchronized boolean isSpamming() {
+        long currentTimeMillis = Instant.now().toEpochMilli();
+
+        messageTimestamps.removeIf(timestamp -> (currentTimeMillis - timestamp) > 1000);
+
+        if (messageTimestamps.size() >= 5) {
+            return true;
+        }
+
+        messageTimestamps.add(currentTimeMillis);
         return false;
     }
 

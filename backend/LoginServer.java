@@ -57,7 +57,7 @@ public class LoginServer {
 
         List<ChatRoom> initialChats = new ArrayList<>();
         ChatRoom savedMessages = new ChatRoom("saved_messages", "Saved Messages", "assets/saved.png");
-        savedMessages.addMessage(new ChatMessage("System", "به پیام‌های ذخیره شده خوش آمدید!"));
+        savedMessages.addMessage(new ChatMessage("System", "به پیام‌های ذخیره شده خوش آمدید!", false));
         initialChats.add(savedMessages);
         userChatsMap.put(username, initialChats);
 
@@ -89,7 +89,7 @@ public class LoginServer {
         return password.matches(regex);
     }
 
-    public List<ChatRoom> getUserMainChats(String username, String searchQuery) {  // recieve chat list
+    public List<ChatRoom> getUserMainChats(String username, String searchQuery) { // recieve chat list
         List<ChatRoom> allChats = userChatsMap.getOrDefault(username, new ArrayList<>());
         List<ChatRoom> filteredChats = new ArrayList<>();
 
@@ -141,6 +141,76 @@ public class LoginServer {
             }
         }
         return archived;
+    }
+
+    public ChatRoom findChatRoom(String username, String chatId) {
+        List<ChatRoom> chats = userChatsMap.get(username);
+        if (chats != null) {
+            for (ChatRoom chat : chats) {
+                if (chat.getId().equals(chatId))
+                    return chat;
+            }
+        }
+        return null;
+    }
+
+    public String addMessageToChat(String username, String chatId, String content, boolean isFile) {
+        User user = registeredMap.get(username);
+        if (user == null)
+            return "USER_NOT_FOUND";
+
+        if (user.isSpamming())
+            return "SPAM_DETECTED";
+
+        if (content.length() > 1000)
+            return "MESSAGE_TOO_LONG";
+
+        ChatRoom room = findChatRoom(username, chatId);
+        if (room == null)
+            return "CHAT_NOT_FOUND";
+
+        ChatMessage msg = new ChatMessage(username, content, isFile);
+        room.addMessage(msg);
+        room.setUnreadCount(0); 
+        return "SUCCESS";
+    }
+
+    public boolean editMessage(String username, String chatId, String messageId, String newContent) {
+        ChatRoom room = findChatRoom(username, chatId);
+        if (room == null)
+            return false;
+
+        for (ChatMessage msg : room.getMessages()) {
+            if (msg.getId().equals(messageId) && msg.getSender().equals(username)) {
+                msg.setContent(newContent);
+                msg.setEdited(true);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean deleteMessage(String username, String chatId, String messageId) {
+        ChatRoom room = findChatRoom(username, chatId);
+        if (room == null)
+            return false;
+
+        return room.getMessages().removeIf(msg -> msg.getId().equals(messageId) && msg.getSender().equals(username));
+    }
+
+    public boolean reportMessage(String username, String chatId, String messageId) {
+        ChatRoom room = findChatRoom(username, chatId);
+        if (room == null)
+            return false;
+
+        for (ChatMessage msg : room.getMessages()) {
+            if (msg.getId().equals(messageId)) {
+                msg.setReported(true);
+                System.out.println("⚠️ پیام گزارش شد! فرستنده: " + msg.getSender() + " | محتوا: " + msg.getContent());
+                return true;
+            }
+        }
+        return false;
     }
 
     public String getUsername() {
