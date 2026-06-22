@@ -56,7 +56,7 @@ public class LoginServer {
     public synchronized SignupResult register(String username, String id, String password, String confirmPassword) {
 
         List<ChatRoom> initialChats = new ArrayList<>();
-        ChatRoom savedMessages = new ChatRoom("saved_messages", "Saved Messages", "assets/saved.png");
+        ChatRoom savedMessages = new ChatRoom("saved_messages", "Saved Messages", "assets/saved.png", false);
         savedMessages.addMessage(new ChatMessage("System", "به پیام‌های ذخیره شده خوش آمدید!", false));
         initialChats.add(savedMessages);
         userChatsMap.put(username, initialChats);
@@ -171,7 +171,7 @@ public class LoginServer {
 
         ChatMessage msg = new ChatMessage(username, content, isFile);
         room.addMessage(msg);
-        room.setUnreadCount(0); 
+        room.setUnreadCount(0);
         return "SUCCESS";
     }
 
@@ -182,6 +182,7 @@ public class LoginServer {
 
         for (ChatMessage msg : room.getMessages()) {
             if (msg.getId().equals(messageId) && msg.getSender().equals(username)) {
+                room.getHistory().add(msg);
                 msg.setContent(newContent);
                 msg.setEdited(true);
                 return true;
@@ -195,7 +196,20 @@ public class LoginServer {
         if (room == null)
             return false;
 
-        return room.getMessages().removeIf(msg -> msg.getId().equals(messageId) && msg.getSender().equals(username));
+        ChatMessage targetMsg = null;
+        for (ChatMessage msg : room.getMessages()) {
+            if (msg.getId().equals(messageId) && msg.getSender().equals(username)) {
+                targetMsg = msg;
+                break;
+            }
+        }
+
+        if (targetMsg != null) {
+            room.getMessages().remove(targetMsg);
+            room.getHistory().add(targetMsg);
+            return true;
+        }
+        return false;
     }
 
     public boolean reportMessage(String username, String chatId, String messageId) {
@@ -206,11 +220,65 @@ public class LoginServer {
         for (ChatMessage msg : room.getMessages()) {
             if (msg.getId().equals(messageId)) {
                 msg.setReported(true);
-                System.out.println("⚠️ پیام گزارش شد! فرستنده: " + msg.getSender() + " | محتوا: " + msg.getContent());
+                System.out.println(" پیام گزارش شد! فرستنده: " + msg.getSender() + " | محتوا: " + msg.getContent());
                 return true;
             }
         }
         return false;
+    }
+
+    public List<String> getCommonGroups(String user1, String user2) {
+        List<String> commonGroups = new ArrayList<>();
+        List<ChatRoom> chats = userChatsMap.get(user1);
+        if (chats != null) {
+            for (ChatRoom chat : chats) {
+                if (chat.isGroup() && chat.getMembers().contains(user2)) {
+                    commonGroups.add(chat.getName());
+                }
+            }
+        }
+        return commonGroups;
+    }
+
+    public boolean toggleBlockUser(String username, String chatId) {
+        ChatRoom room = findChatRoom(username, chatId);
+        if (room == null || room.isGroup())
+            return false;
+        room.setBlocked(!room.isBlocked()); // معکوس کردن وضعیت بلاک
+        return true;
+    }
+
+    public boolean toggleArchiveChat(String username, String chatId) {
+        ChatRoom room = findChatRoom(username, chatId);
+        if (room == null)
+            return false;
+        room.setArchived(!room.isArchived()); // معکوس کردن وضعیت آرشیو
+        return true;
+    }
+
+    public boolean updateGroupInfo(String username, String chatId, String newName, String newAvatar) {
+        ChatRoom room = findChatRoom(username, chatId);
+        if (room == null || !room.isGroup())
+            return false;
+        room.setName(newName);
+        room.setAvatarUrl(newAvatar);
+        return true;
+    }
+
+    public boolean leaveGroup(String username, String chatId) {
+        ChatRoom room = findChatRoom(username, chatId);
+        if (room == null || !room.isGroup())
+            return false;
+        room.removeMember(username);
+        return true;
+    }
+
+    public boolean addMemberToGroup(String username, String chatId, String newMemberUsername) {
+        ChatRoom room = findChatRoom(username, chatId);
+        if (room == null || !room.isGroup())
+            return false;
+        room.addMember(newMemberUsername);
+        return true;
     }
 
     public String getUsername() {
