@@ -9,8 +9,13 @@ public class ChatRoom { // all features in the chat room
     private boolean isPinned; // قابلیت سنجاق (Pin) کردن
     private boolean isArchived; // پوشه آرشیو
     private List<ChatMessage> messages; // لیست کل پیام‌های این چت
+    private String username;
+    private boolean isGroup;
+    private boolean isBlocked;
+    private List<String> members;
+    private List<ChatMessage> history;
 
-    public ChatRoom(String id, String name, String avatarUrl) {
+    public ChatRoom(String id, String name, String avatarUrl, boolean isGroup) {
         this.id = id;
         this.name = name;
         this.avatarUrl = avatarUrl;
@@ -18,6 +23,15 @@ public class ChatRoom { // all features in the chat room
         this.isPinned = false;
         this.isArchived = false;
         this.messages = new ArrayList<>();
+        this.isGroup = isGroup;
+        if (isGroup) {
+            this.username = "";
+        } else {
+            this.username = id;
+        }
+        this.isBlocked = false;
+        this.members = new ArrayList<>();
+        this.history = new ArrayList<>();
     }
 
     // متد کمکی برای دریافت آخرین پیام این اتاق چت
@@ -32,6 +46,17 @@ public class ChatRoom { // all features in the chat room
         this.messages.add(msg);
     }
 
+    // متد اضافه کردن عضو جدید به گروه
+    public void addMember(String user) {
+        if (!members.contains(user))
+            members.add(user);
+    }
+
+    // ترک گروه
+    public void removeMember(String user) {
+        members.remove(user);
+    }
+
     public String getId() {
         return id;
     }
@@ -40,8 +65,20 @@ public class ChatRoom { // all features in the chat room
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
     public String getAvatarUrl() {
         return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     public int getUnreadCount() {
@@ -68,7 +105,27 @@ public class ChatRoom { // all features in the chat room
         isArchived = archived;
     }
 
+    public boolean isGroup() {
+        return isGroup;
+    }
+
+    public boolean isBlocked() {
+        return isBlocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        isBlocked = blocked;
+    }
+
+    public List<String> getMembers() {
+        return members;
+    }
+
     public List<ChatMessage> getMessages() {
         return messages;
+    }
+
+    public List<ChatMessage> getHistory() {
+        return history;
     }
 }

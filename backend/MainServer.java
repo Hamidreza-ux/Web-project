@@ -8,6 +8,7 @@ public class MainServer {
         server.createContext("/api/auth/login", new LoginWebHandler());
         server.createContext("/api/auth/signup", new SignupWebHandler());
         server.createContext("/api/chats", new MainPageWebHandler());
+        server.createContext("/api/message", new ChatPageWebHandler());
 
         server.setExecutor(null);
         System.out.println("Server started on port 8080...");
