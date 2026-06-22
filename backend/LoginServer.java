@@ -340,4 +340,8 @@ public class LoginServer {
         this.password = password;
     }
 
+    public Map<String, User> getRegisteredMap() {
+        return registeredMap;
+    }
+
 }
