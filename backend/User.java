@@ -9,6 +9,7 @@ public class User {
     private String ID;
     private final List<Long> messageTimestamps;
     private boolean darkMode;
+    private final List<String> contacts;
 
     public User(String username, String ID, String password) {
         this.username = username;
@@ -17,6 +18,7 @@ public class User {
         failedAttempt = 0;
         this.messageTimestamps = new ArrayList<>();
         this.darkMode = false;
+        this.contacts = new ArrayList<>();
     }
 
     public boolean passwordIsRight(String newPassword) {
@@ -86,6 +88,10 @@ public class User {
 
     public void setDarkMode(boolean darkMode) {
         this.darkMode = darkMode;
+    }
+
+    public List<String> getContacts() {
+        return contacts;
     }
 
 }

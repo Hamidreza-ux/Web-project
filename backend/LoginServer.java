@@ -324,6 +324,71 @@ public class LoginServer {
         return true;
     }
 
+    public String addContactByUniqueId(String username, String targetUniqueId) {
+        User currentUser = registeredMap.get(username);
+        if (currentUser == null)
+            return "USER_NOT_FOUND";
+
+        User targetUser = null;
+        for (User u : registeredMap.values()) {
+            if (u.getID().equals(targetUniqueId)) {
+                targetUser = u;
+                break;
+            }
+        }
+
+        if (targetUser == null)
+            return "TARGET_NOT_FOUND";
+
+        if (targetUser.getUsername().equals(username))
+            return "CANNOT_ADD_SELF";
+
+        if (currentUser.getContacts().contains(targetUser.getUsername())) {
+            return "ALREADY_CONTACT";
+        }
+
+        currentUser.getContacts().add(targetUser.getUsername());
+        createPrivateChatRoom(username, targetUser.getUsername());
+
+        return "SUCCESS";
+    }
+
+    private void createPrivateChatRoom(String user1, String user2) {
+        List<ChatRoom> user1Chats = userChatsMap.computeIfAbsent(user1, k -> new ArrayList<>());
+
+        for (ChatRoom room : user1Chats) {
+            if (!room.isGroup() && room.getId().equals(user2))
+                return;
+        }
+
+        ChatRoom roomForUser1 = new ChatRoom(user2, user2, "assets/default_avatar.png", false);
+        user1Chats.add(roomForUser1);
+
+        List<ChatRoom> user2Chats = userChatsMap.computeIfAbsent(user2, k -> new ArrayList<>());
+        ChatRoom roomForUser2 = new ChatRoom(user1, user1, "assets/default_avatar.png", false);
+        user2Chats.add(roomForUser2);
+    }
+
+    public boolean createNewGroup(String creatorUsername, String groupName, List<String> initialMembers) {
+        String groupId = "group_" + System.currentTimeMillis();
+
+        ChatRoom newGroup = new ChatRoom(groupId, groupName, "assets/group_avatar.png", true);
+        newGroup.addMember(creatorUsername);
+
+        if (initialMembers != null) {
+            for (String member : initialMembers) {
+                newGroup.addMember(member);
+            }
+        }
+
+        for (String member : newGroup.getMembers()) {
+            List<ChatRoom> chats = userChatsMap.computeIfAbsent(member, k -> new ArrayList<>());
+            chats.add(newGroup);
+        }
+
+        return true;
+    }
+
     public String getUsername() {
         return username;
     }
