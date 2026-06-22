@@ -281,6 +281,49 @@ public class LoginServer {
         return true;
     }
 
+    public boolean updateProfile(String username, String newName, String newAvatarUrl) {
+        User user = registeredMap.get(username);
+        if (user == null)
+            return false;
+
+        if (newName != null && !newName.isBlank()) {
+        }
+        return true;
+    }
+
+    public String updateId(String username, String newId) {
+        User currentUser = registeredMap.get(username);
+        if (currentUser == null)
+            return "USER_NOT_FOUND";
+
+        for (User u : registeredMap.values()) {
+            if (u.getID().equals(newId) && !u.getUsername().equals(username)) {
+                return "DUPLICATE_ID";
+            }
+        }
+
+        currentUser.setID(newId);
+        return "SUCCESS";
+    }
+
+    public boolean toggleTheme(String username, boolean darkMode) {
+        User user = registeredMap.get(username);
+        if (user == null)
+            return false;
+        user.setDarkMode(darkMode);
+        return true;
+    }
+
+    public boolean deleteUserAccount(String username) {
+        if (!registeredMap.containsKey(username))
+            return false;
+
+        registeredMap.remove(username);
+        userChatsMap.remove(username);
+
+        return true;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -295,6 +338,10 @@ public class LoginServer {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Map<String, User> getRegisteredMap() {
+        return registeredMap;
     }
 
 }
