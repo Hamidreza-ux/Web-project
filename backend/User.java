@@ -7,13 +7,16 @@ public class User {
     private String password;
     private int failedAttempt;
     private String ID;
-    private final List<Long> messageTimestamps = new ArrayList<>();
+    private final List<Long> messageTimestamps;
+    private boolean darkMode;
 
     public User(String username, String ID, String password) {
         this.username = username;
         this.ID = ID;
         this.password = password;
         failedAttempt = 0;
+        this.messageTimestamps = new ArrayList<>();
+        this.darkMode = false;
     }
 
     public boolean passwordIsRight(String newPassword) {
@@ -75,6 +78,14 @@ public class User {
 
     public void setID(String ID) {
         this.ID = ID;
+    }
+
+    public boolean isDarkMode() {
+        return darkMode;
+    }
+
+    public void setDarkMode(boolean darkMode) {
+        this.darkMode = darkMode;
     }
 
 }
