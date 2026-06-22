@@ -10,6 +10,7 @@ public class MainServer {
         server.createContext("/api/chats", new MainPageWebHandler());
         server.createContext("/api/message", new ChatPageWebHandler());
         server.createContext("/api/chat-info", new ChatInfoWebHandler());
+        server.createContext("/api/settings", new SettingsWebHandler());
 
         server.setExecutor(null);
         System.out.println("Server started on port 8080...");
