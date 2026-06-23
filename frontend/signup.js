@@ -14,10 +14,10 @@ document.getElementById('SignupForm').addEventListener('submit', function (event
         username: usernameInput,
         password: passwordInput,
         confirmPassword: confirmPasswordInput,
-        id: userIdInput
+        userId: userIdInput
     };
 
-    fetch('http://localhost:8080/api/auth/signup', {
+    fetch('http://localhost:8085/api/auth/signup', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -43,7 +43,7 @@ document.getElementById('SignupForm').addEventListener('submit', function (event
 
                 setTimeout(() => {
                     alert("انتقال به داشبورد اصلی سایت...");
-                    window.location.href = 'Login.html';
+                    window.location.href = 'index.html';
                 }, 2000);
             } else {
                 messageBox.innerText = result.data.message;

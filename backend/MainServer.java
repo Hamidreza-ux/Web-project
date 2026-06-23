@@ -4,7 +4,7 @@ import java.net.InetSocketAddress;
 public class MainServer {
     public static void main(String[] args) throws Exception {
         try {
-            HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+            HttpServer server = HttpServer.create(new InetSocketAddress(8085), 0);
 
             server.createContext("/api/auth/login", new LoginWebHandler());
             server.createContext("/api/auth/signup", new SignupWebHandler());
@@ -15,7 +15,7 @@ public class MainServer {
             server.createContext("/api/create-chat", new CreateChatWebHandler());
 
             server.setExecutor(null);
-            System.out.println("Server started on port 8080...");
+            System.out.println("Server started on port 8085...");
             server.start();
 
             AdminCLI adminPanel = new AdminCLI();
