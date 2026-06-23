@@ -13,7 +13,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
         password: passwordInput
     };
 
-    fetch('http://localhost:8080/api/auth/login', {
+    fetch('http://localhost:8085/api/auth/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

@@ -29,12 +29,12 @@ public class SignupWebHandler implements HttpHandler {
                 String password = parseJsonFieldWhithRegex(body, "password");
                 String confirmPassword = parseJsonFieldWhithRegex(body, "confirmPassword");
 
-                if (username.trim().isEmpty() || id.trim().isEmpty() || password.trim().isEmpty()
-                        || confirmPassword.trim().isEmpty()) {
+                /*if (username.isBlank() || id.isBlank() || password.isBlank()
+                        || confirmPassword.isBlank()) {
                     sendResponse(exchange, 400,
                             "{\"status\":\"error\", \"message\":\"پر کردن تمام فیلدها الزامی است.\"}");
                     return;
-                }
+                }*/
 
                 LoginServer loginServer = LoginServer.getInstance();
                 SignupResult result = loginServer.register(username, id, password, confirmPassword);
