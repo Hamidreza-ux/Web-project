@@ -1,8 +1,7 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.nio.charset.StandardCharsets;
 
 public class LoginServer {
     private String username;
@@ -14,8 +13,24 @@ public class LoginServer {
                                                                      // موقت در اینجا ذخیره میکنیم
     private final Map<String, List<ChatRoom>> userChatsMap = new ConcurrentHashMap<>(); // لیست صفحه چت ها و نام کاربری
                                                                                         // کاربر
+    private static final String DB_DIR = "database/";
+    private static final String USERS_FILE = DB_DIR + "users.txt";
+    private static final String CHATS_DIR = DB_DIR + "chats/";
 
     private LoginServer() {
+        try {
+            File dbFolder = new File(DB_DIR);
+            File chatsFolder = new File(CHATS_DIR);
+            if (!dbFolder.exists())
+                dbFolder.mkdir();
+            if (!chatsFolder.exists())
+                chatsFolder.mkdir();
+
+            // لود کردن اطلاعات از روی دیسک به محض روشن شدن سرور
+            loadDataFromFiles();
+        } catch (Exception e) {
+            System.out.println("خطا در ایجاد پوشه دیتابیس: " + e.getMessage());
+        }
     }
 
     public static LoginServer getInstance() {
@@ -75,8 +90,12 @@ public class LoginServer {
         if (!isPasswordValid(password, username)) {
             return SignupResult.INVALID_PASSWORD;
         }
+        if (registeredMap.containsKey(username)) {
+            return SignupResult.ALREADY_EXISTS;
+        }
         User newUser = new User(username, id, password);
         registeredMap.put(username, newUser);
+        saveUsersToFile();
 
         return SignupResult.SUCCESS;
     }
@@ -415,6 +434,122 @@ public class LoginServer {
             System.out.println("هیچ پیام گزارش شده‌ای وجود ندارد.");
         }
         System.out.println("---------------------------------------");
+    }
+
+    // ذخیره کل کاربران سیستم در فایل متنی users.txt
+    private synchronized void saveUsersToFile() {
+        try (PrintWriter writer = new PrintWriter(
+                new OutputStreamWriter(new FileOutputStream(USERS_FILE), StandardCharsets.UTF_8))) {
+            for (User u : registeredMap.values()) {
+                String contactsStr = String.join(",", u.getContacts());
+                writer.printf("%s|%s|%s|%b|%s\n",
+                        u.getUsername(), u.getPassword(), u.getID(), u.isDarkMode(), contactsStr);
+            }
+        } catch (IOException e) {
+            System.err.println("خطا در ذخیره فایل کاربران: " + e.getMessage());
+        }
+    }
+
+    public synchronized void saveChatHistoryToFile(String roomId, List<ChatMessage> messages) {
+        File chatFile = new File(CHATS_DIR + roomId + ".txt");
+        try (PrintWriter writer = new PrintWriter(
+                new OutputStreamWriter(new FileOutputStream(chatFile), StandardCharsets.UTF_8))) {
+            for (ChatMessage msg : messages) {
+                String encryptedContent = CryptoHelper.encrypt(msg.getContent());
+                writer.printf("%s|%b|%s\n", msg.getSender(), msg.isReported(), encryptedContent);
+            }
+        } catch (IOException e) {
+            System.err.println("خطا در ذخیره تاریخچه چت: " + e.getMessage());
+        }
+    }
+
+    private void loadDataFromFiles() {
+        File uFile = new File(USERS_FILE);
+        if (!uFile.exists())
+            return;
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(uFile), StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|", -1);
+                if (parts.length < 4)
+                    continue;
+
+                String username = parts[0];
+                String password = parts[1];
+                String userId = parts[2];
+                boolean isDarkMode = Boolean.parseBoolean(parts[3]);
+
+                User user = new User(username, userId, password);
+                user.setID(userId);
+                user.setDarkMode(isDarkMode);
+
+                if (parts.length == 5 && !parts[4].isEmpty()) {
+                    for (String contact : parts[4].split(",")) {
+                        user.getContacts().add(contact);
+                    }
+                }
+                registeredMap.put(username, user);
+            }
+        } catch (IOException e) {
+            System.err.println("خطا در لود کاربران: " + e.getMessage());
+        }
+
+        for (User user : registeredMap.values()) {
+            List<ChatRoom> rooms = userChatsMap.computeIfAbsent(user.getUsername(), k -> new ArrayList<>());
+            for (String contactJson : user.getContacts()) {
+                String roomId = generatePrivateRoomId(user.getUsername(), contactJson);
+                ChatRoom room = new ChatRoom(roomId, contactJson, "assets/default_avatar.png", false);
+
+                loadChatMessagesFromFile(room);
+                rooms.add(room);
+            }
+        }
+    }
+
+    private void loadChatMessagesFromFile(ChatRoom room) {
+        File chatFile = new File(CHATS_DIR + room.getId() + ".txt");
+        if (!chatFile.exists())
+            return;
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(chatFile), StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|", 3);
+                if (parts.length < 3)
+                    continue;
+
+                String sender = parts[0];
+                boolean isReported = Boolean.parseBoolean(parts[1]);
+                String encryptedContent = parts[2];
+                String plainText = CryptoHelper.decrypt(encryptedContent);
+
+                ChatMessage msg = new ChatMessage(sender, plainText, false);
+                if (isReported)
+                    msg.setReported(true);
+                room.getMessages().add(msg);
+            }
+        } catch (IOException e) {
+            System.err.println("خطا در لود پیام‌های چت: " + e.getMessage());
+        }
+    }
+
+    private String generatePrivateRoomId(String user1, String user2) {
+        return user1.compareTo(user2) < 0 ? user1 + "_" + user2 : user2 + "_" + user1;
+    }
+
+    public void addMessageToRoom(String roomId, ChatMessage message) {
+        for (List<ChatRoom> chats : userChatsMap.values()) {
+            for (ChatRoom room : chats) {
+                if (room.getId().equals(roomId)) {
+                    room.getMessages().add(message);
+                    saveChatHistoryToFile(roomId, room.getMessages());
+                    return;
+                }
+            }
+        }
     }
 
     public String getUsername() {
