@@ -389,6 +389,34 @@ public class LoginServer {
         return true;
     }
 
+    public boolean adminDeleteGroup(String groupId) {
+        boolean found = false;
+        for (List<ChatRoom> chats : userChatsMap.values()) {
+            found |= chats.removeIf(room -> room.isGroup() && room.getId().equals(groupId));
+        }
+        return found;
+    }
+
+    public void printReportedMessages() {
+        System.out.println("\n--- لیست پیام‌های گزارش شده به ادمین ---");
+        int count = 0;
+        for (List<ChatRoom> chats : userChatsMap.values()) {
+            for (ChatRoom room : chats) {
+                for (ChatMessage msg : room.getMessages()) {
+                    if (msg.isReported()) {
+                        count++;
+                        System.out.printf("[%d] چت: %s | فرستنده اسپم: %s | محتوای پیام: \"%s\"\n",
+                                count, room.getName(), msg.getSender(), msg.getContent());
+                    }
+                }
+            }
+        }
+        if (count == 0) {
+            System.out.println("هیچ پیام گزارش شده‌ای وجود ندارد.");
+        }
+        System.out.println("---------------------------------------");
+    }
+
     public String getUsername() {
         return username;
     }
@@ -407,6 +435,10 @@ public class LoginServer {
 
     public Map<String, User> getRegisteredMap() {
         return registeredMap;
+    }
+
+    public Map<String, List<ChatRoom>> getUserChatsMap() {
+        return userChatsMap;
     }
 
 }
