@@ -22,6 +22,15 @@ body {
     max-width: 400px;
 }
 
+.signup-container {
+    background: #4f96ec;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
 h2 {
     text-align: center;
     margin-bottom: 25px;

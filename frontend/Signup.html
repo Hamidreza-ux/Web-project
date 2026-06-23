@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sign Up</title>
+        <link rel="stylesheet" href="style.css">
+        <script src="signup.js" defer></script>
+    </head>
+
+    <body>
+        <div class="signup-container">
+            <h2>ثبت نام حساب کاربری</h2>
+            <form id="SignupForm">
+                <div class="input-group">
+                    <label for="username">نام کاربری</label>
+                    <input type="text" id="username" required placeholder="نام کاربری را وارد کنید">
+                </div>
+                
+                <div class="input-group">
+                    <label for="userId">شناسه</label>
+                    <input type="text" id="userId" required placeholder="شناسه را وارد کنید">
+                </div>
+
+                <div class="input-group">
+                    <label for="password">رمز عبور</label>
+                    <input type="password" id="password" required placeholder="رمز عبور را وارد کنید">
+                </div>
+                
+                <div class="input-group">
+                    <label for="confirmPassword">تکرار رمز عبور</label>
+                    <input type="password" id="confirmPassword" required placeholder="رمز عبور را تکرار کنید">
+                </div>
+
+                <button type="submit" id="submitBtn">ثبت نام</button>
+            </form>
+            <div id="messageBox" class="message-box"></div>
+        </div>
+    </body>
+</html>
