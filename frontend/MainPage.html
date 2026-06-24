@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مَت</title>
+    <link rel="stylesheet" href="MainPage.css">
+    <script src="mainpage.js" defer></script>
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="sidebar" id="sidebar">
+
+        <!-- هدر سایدبار -->
+        <div class="sidebar-header">
+            <div class="header-right">
+                <!-- عکس پروفایل کاربر -->
+                <div class="user-avatar" id="userAvatar"></div>
+                <span class="user-name" id="userName">در حال بارگذاری...</span>
+            </div>
+            <div class="header-left">
+                <!-- دکمه جستجو -->
+                <button class="hdr-btn" id="searchToggleBtn" title="جستجو">
+                    <img src="assets/search.svg" alt="جستجو">
+                </button>
+                <!-- دکمه منوی سه نقطه -->
+                <button class="hdr-btn" id="menuBtn" title="منو">
+                    <img src="assets/ellipsis-vertical.svg" alt="منو">
+                </button>
+            </div>
+        </div>
+
+        <!-- منوی کشویی سه نقطه -->
+        <div class="dropdown-menu" id="dropdownMenu">
+            <a href="CreateChat.html" class="drop-item">
+                <img src="assets/circle-plus.svg" alt="">
+                گفتگوی جدید
+            </a>
+            <a href="Settings.html" class="drop-item">
+                <img src="assets/user-round-check.svg" alt="">
+                تنظیمات
+            </a>
+            <a href="#" class="drop-item" id="logoutBtn">
+                <img src="assets/user-lock.svg" alt="">
+                خروج از حساب
+            </a>
+        </div>
+
+        <!-- ========== صفحه جستجو (روی sidebar می‌آید) ========== -->
+        <div class="search-overlay" id="searchOverlay">
+            <div class="search-overlay-header">
+                <button class="back-search-btn" id="closeSearchBtn">
+                    <!-- فلش برگشت SVG inline -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                    </svg>
+                </button>
+                <input type="text" class="search-overlay-input" id="searchInput"
+                       placeholder="جستجو در گفتگوها...">
+            </div>
+            <div class="search-results" id="searchResults">
+                <!-- نتایج جستجو اینجا نمایش داده می‌شوند -->
+            </div>
+        </div>
+
+        <!-- لیست چت‌ها -->
+        <div class="chat-list" id="chatList">
+
+            <!-- ردیف آرشیو — فقط اگر آرشیو خالی نبود نمایش داده می‌شه -->
+            <div class="archive-row" id="archiveRow" style="display:none">
+                <div class="archive-icon-wrap">
+                    <img src="assets/folder-open-dot.svg" alt="آرشیو">
+                </div>
+                <div class="archive-info">
+                    <span class="archive-label">آرشیو</span>
+                </div>
+                <span class="archive-badge" id="archiveBadge">0</span>
+            </div>
+
+            <!-- پیام‌های ذخیره شده — همیشه ثابت -->
+            <div class="chat-item saved-item" id="savedMessagesItem"
+                 data-chat-id="saved_messages" data-is-group="false" data-is-pinned="false">
+                <div class="chat-avatar saved-avatar">
+                    <img src="assets/bookmark.svg" alt="ذخیره شده">
+                </div>
+                <div class="chat-info">
+                    <div class="chat-top-row">
+                        <span class="chat-name">پیام‌های ذخیره شده</span>
+                    </div>
+                    <div class="chat-bottom-row">
+                        <span class="chat-last-msg" id="savedLastMsg">بدون پیام</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- چت‌های داینامیک -->
+            <div id="dynamicChatList"></div>
+
+        </div>
+
+        <!-- دکمه شناور چت جدید -->
+        <a href="CreateChat.html" class="fab-btn" title="گفتگوی جدید">
+            <img src="assets/circle-plus.svg" alt="+">
+        </a>
+
+    </aside>
+
+    <!-- ========== ناحیه چت اصلی ========== -->
+    <main class="chat-area" id="chatArea">
+        <!-- صفحه خوش‌آمد -->
+        <div class="welcome-screen" id="welcomeScreen">
+            <div class="welcome-logo">
+                <img src="assets/message-circle.svg" alt="مَت">
+            </div>
+            <h2>مَت</h2>
+            <p>یک گفتگو را از سمت راست انتخاب کنید</p>
+        </div>
+
+        <!-- پنجره چت (مخفی تا یک چت انتخاب نشود) -->
+        <div class="chat-window" id="chatWindow" style="display:none">
+
+            <!-- هدر چت -->
+            <div class="chat-window-header">
+                <div class="cwh-right">
+                    <div class="cwh-avatar" id="cwhAvatar"></div>
+                    <div class="cwh-info">
+                        <div class="cwh-name" id="cwhName"></div>
+                        <div class="cwh-status" id="cwhStatus"></div>
+                    </div>
+                </div>
+                <div class="cwh-left">
+                    <button class="hdr-btn cwh-search-btn" id="msgSearchToggle" title="جستجو در پیام‌ها">
+                        <img src="assets/search.svg" alt="جستجو">
+                    </button>
+                    <button class="hdr-btn" id="cwhMenuBtn" title="بیشتر">
+                        <img src="assets/ellipsis-vertical.svg" alt="منو">
+                    </button>
+                </div>
+            </div>
+
+            <!-- نوار جستجو پیام‌ها (مخفی) -->
+            <div class="msg-search-bar" id="msgSearchBar" style="display:none">
+                <img src="assets/search.svg" alt="">
+                <input type="text" id="msgSearchInput" placeholder="جستجو در پیام‌ها...">
+                <button id="clearMsgSearch">✕</button>
+            </div>
+
+            <!-- لیست پیام‌ها -->
+            <div class="messages-area" id="messagesArea">
+                <div class="messages-list" id="messagesList"></div>
+            </div>
+
+            <!-- ویرایش بار -->
+            <div class="edit-bar" id="editBar" style="display:none">
+                <span>✏️ در حال ویرایش پیام</span>
+                <button id="cancelEditBtn">لغو</button>
+            </div>
+
+            <!-- ورودی پیام -->
+            <div class="message-input-wrap">
+                <button class="attach-btn" id="attachBtn" title="ارسال فایل">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                    </svg>
+                </button>
+                <input type="file" id="fileInput" style="display:none">
+                <textarea id="messageInput" placeholder="پیام بنویسید..." rows="1"
+                          maxlength="1000"></textarea>
+                <span class="char-count" id="charCount">0/1000</span>
+                <button class="send-btn" id="sendBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
+                    </svg>
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+</div>
+
+<!-- ========== باکس قابلیت‌ها روی گپ ========== -->
+<div class="chat-action-box" id="chatActionBox" style="display:none">
+    <!-- پین / آن‌پین -->
+    <button class="action-box-item" id="actionPin">
+        <img src="assets/pin.svg" alt="" id="actionPinIcon">
+        <span id="actionPinLabel">سنجاق کردن</span>
+    </button>
+    <!-- آرشیو -->
+    <button class="action-box-item" id="actionArchive">
+        <img src="assets/folder-open-dot.svg" alt="">
+        <span id="actionArchiveLabel">آرشیو</span>
+    </button>
+    <!-- بلاک — فقط چت شخصی -->
+    <button class="action-box-item" id="actionBlock" style="display:none">
+        <img src="assets/user-lock.svg" alt="">
+        <span id="actionBlockLabel">بلاک کردن</span>
+    </button>
+    <!-- حذف گفتگو -->
+    <button class="action-box-item danger" id="actionDelete">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+        </svg>
+        <span>حذف گفتگو</span>
+    </button>
+</div>
+
+<!-- منوی کانتکست پیام -->
+<div class="msg-context-menu" id="msgContextMenu" style="display:none">
+    <button class="mcm-item" id="mcmEdit" style="display:none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+        </svg>
+        ویرایش
+    </button>
+    <button class="mcm-item danger" id="mcmDelete" style="display:none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+        </svg>
+        حذف
+    </button>
+    <button class="mcm-item" id="mcmReport">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+            <line x1="4" x2="4" y1="22" y2="15"/>
+        </svg>
+        گزارش
+    </button>
+</div>
+
+<!-- مودال آرشیو -->
+<div class="modal-overlay" id="archiveModal" style="display:none">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>گفتگوهای آرشیو شده</h3>
+            <button id="closeArchiveModal">✕</button>
+        </div>
+        <div class="modal-body" id="archiveList"></div>
+    </div>
+</div>
+
+</body>
+</html>
