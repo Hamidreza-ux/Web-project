@@ -5,7 +5,7 @@ import java.util.Base64;
 
 public class CryptoHelper {
     // یک کلید ۱۶ کاراکتری ثابت برای رمزنگاری و رمزگشایی سیستم
-    private static final String SECRET_KEY = "MySecretKey4SBU!";// MySecretKeyForSBU 17 کاراکتر هست
+    private static final String SECRET_KEY = "MySecretKey4SBU!";
     private static final SecretKeySpec keySpec = new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8), "AES");
 
     //تبدیل متن سالم به متن رمزگذاری شده نامفهوم

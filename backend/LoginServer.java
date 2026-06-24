@@ -1,16 +1,18 @@
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.nio.charset.StandardCharsets;
 
 public class LoginServer {
     private String username;
     private String password;
     private static volatile LoginServer instance;
 
-    private final Map<String, User> registeredMap = new ConcurrentHashMap<>();
-    private final Map<String, List<ChatRoom>> userChatsMap = new ConcurrentHashMap<>();
-
+    private final Map<String, User> registeredMap = new HashMap<>(); // چون هنوز به دیتابیس وصل نشدیم اطلاعات کاربر رو
+                                                                     // به صورت
+                                                                     // موقت در اینجا ذخیره میکنیم
+    private final Map<String, List<ChatRoom>> userChatsMap = new ConcurrentHashMap<>(); // لیست صفحه چت ها و نام کاربری
+                                                                                        // کاربر
     private static final String DB_DIR = "database/";
     private static final String USERS_FILE = DB_DIR + "users.txt";
     private static final String CHATS_DIR = DB_DIR + "chats/";
@@ -24,6 +26,7 @@ public class LoginServer {
             if (!chatsFolder.exists())
                 chatsFolder.mkdir();
 
+            // لود کردن اطلاعات از روی دیسک به محض روشن شدن سرور
             loadDataFromFiles();
         } catch (Exception e) {
             System.out.println("خطا در ایجاد پوشه دیتابیس: " + e.getMessage());
@@ -41,62 +44,58 @@ public class LoginServer {
         return instance;
     }
 
-    public synchronized LoginResult authenticate(String username, String password) {
-        User user = registeredMap.get(username);
+    public synchronized LoginResult authenticate(String username, String password) { // synchronized برای multy
+                                                                                     // threading,
+        this.username = username;
+        this.password = password;
+        User user = registeredMap.get(this.username);
 
         if (user == null) {
             return LoginResult.USER_NOT_FOUND;
         }
 
-        if (user.isLocked()) {
-            return LoginResult.ACCOUNT_LOCKED;
-        }
-
-        if (!user.passwordIsRight(password)) {
+        else if (!user.passwordIsRight(this.password)) {
             return LoginResult.WRONG_PASSWORD;
         }
 
-        return LoginResult.SUCCESS;
+        else if (user.isLocked()) {
+            return LoginResult.ACCOUNT_LOCKED;
+        }
+
+        else if (user.passwordIsRight(this.password)) {
+            return LoginResult.SUCCESS;
+        }
+        return null;
     }
 
-    // FIX 1: ترتیب validation اصلاح شد — initialChats فقط بعد از تأیید همه شرایط ساخته می‌شود
-    // FIX 2: چک تکراری ALREADY_EXISTS که هرگز اجرا نمی‌شد حذف شد
     public synchronized SignupResult register(String username, String id, String password, String confirmPassword) {
-
-        if (!password.equals(confirmPassword)) {
-            return SignupResult.PASSWORD_MISMATCH;
-        }
-
-        if (registeredMap.containsKey(username)) {
-            return SignupResult.DUPLICATE_USERNAME;
-        }
-
-        for (User u : registeredMap.values()) {
-            if (u.getUsername().equalsIgnoreCase(username) && u.getID().equalsIgnoreCase(id)) {
-                return SignupResult.ALREADY_EXISTS;
-            }
-        }
-
-        for (User u : registeredMap.values()) {
-            if (u.getID().equalsIgnoreCase(id)) {
-                return SignupResult.DUPLICATE_ID;
-            }
-        }
-
-        if (!isPasswordValid(password, username)) {
-            return SignupResult.INVALID_PASSWORD;
-        }
-
-        // همه چک‌ها پاس شدند — حالا کاربر و چت اولیه را بساز
-        User newUser = new User(username, id, password);
-        registeredMap.put(username, newUser);
-        saveUsersToFile();
 
         List<ChatRoom> initialChats = new ArrayList<>();
         ChatRoom savedMessages = new ChatRoom("saved_messages", "Saved Messages", "assets/saved.png", false);
         savedMessages.addMessage(new ChatMessage("System", "به پیام‌های ذخیره شده خوش آمدید!", false));
         initialChats.add(savedMessages);
         userChatsMap.put(username, initialChats);
+
+        if (!password.equals(confirmPassword)) {
+            return SignupResult.PASSWORD_MISMATCH;
+        }
+        if (registeredMap.containsKey(username)) {
+            return SignupResult.DUPLICATE_USERNAME;
+        }
+        for (User u : registeredMap.values()) {
+            if (u.getID().equalsIgnoreCase(id)) {
+                return SignupResult.DUPLICATE_ID;
+            }
+        }
+        if (!isPasswordValid(password, username)) {
+            return SignupResult.INVALID_PASSWORD;
+        }
+        if (registeredMap.containsKey(username)) {
+            return SignupResult.ALREADY_EXISTS;
+        }
+        User newUser = new User(username, id, password);
+        registeredMap.put(username, newUser);
+        saveUsersToFile();
 
         return SignupResult.SUCCESS;
     }
@@ -109,28 +108,32 @@ public class LoginServer {
         return password.matches(regex);
     }
 
-    public List<ChatRoom> getUserMainChats(String username, String searchQuery) {
+    public List<ChatRoom> getUserMainChats(String username, String searchQuery) { // recieve chat list
         List<ChatRoom> allChats = userChatsMap.getOrDefault(username, new ArrayList<>());
         List<ChatRoom> filteredChats = new ArrayList<>();
 
         for (ChatRoom chat : allChats) {
+            // چت‌های آرشیو شده نباید در صفحه اصلی بیایند
             if (chat.isArchived())
                 continue;
 
+            // قابلیت جستجو بین گفتگوها (اگر کاربر چیزی سرچ کرده باشد)
             if (searchQuery != null && !searchQuery.isBlank()) {
                 if (!chat.getName().toLowerCase().contains(searchQuery.toLowerCase())) {
-                    continue;
+                    continue; // اگر نام چت با سرچ نخواند، ردش کن
                 }
             }
             filteredChats.add(chat);
         }
 
         filteredChats.sort((chat1, chat2) -> {
+            // pin
             if (chat1.isPinned() && !chat2.isPinned())
                 return -1;
             if (!chat1.isPinned() && chat2.isPinned())
                 return 1;
 
+            // date
             ChatMessage msg1 = chat1.getLastMessage();
             ChatMessage msg2 = chat2.getLastMessage();
 
@@ -147,6 +150,7 @@ public class LoginServer {
         return filteredChats;
     }
 
+    // آرشیو
     public List<ChatRoom> getArchivedChats(String username) {
         List<ChatRoom> allChats = userChatsMap.getOrDefault(username, new ArrayList<>());
         List<ChatRoom> archived = new ArrayList<>();
@@ -235,7 +239,7 @@ public class LoginServer {
         for (ChatMessage msg : room.getMessages()) {
             if (msg.getId().equals(messageId)) {
                 msg.setReported(true);
-                System.out.println("پیام گزارش شد! فرستنده: " + msg.getSender() + " | محتوا: " + msg.getContent());
+                System.out.println(" پیام گزارش شد! فرستنده: " + msg.getSender() + " | محتوا: " + msg.getContent());
                 return true;
             }
         }
@@ -259,7 +263,7 @@ public class LoginServer {
         ChatRoom room = findChatRoom(username, chatId);
         if (room == null || room.isGroup())
             return false;
-        room.setBlocked(!room.isBlocked());
+        room.setBlocked(!room.isBlocked()); // معکوس کردن وضعیت بلاک
         return true;
     }
 
@@ -267,7 +271,7 @@ public class LoginServer {
         ChatRoom room = findChatRoom(username, chatId);
         if (room == null)
             return false;
-        room.setArchived(!room.isArchived());
+        room.setArchived(!room.isArchived()); // معکوس کردن وضعیت آرشیو
         return true;
     }
 
@@ -275,10 +279,8 @@ public class LoginServer {
         ChatRoom room = findChatRoom(username, chatId);
         if (room == null || !room.isGroup())
             return false;
-        if (newName != null && !newName.isBlank())
-            room.setName(newName);
-        if (newAvatar != null && !newAvatar.isBlank())
-            room.setAvatarUrl(newAvatar);
+        room.setName(newName);
+        room.setAvatarUrl(newAvatar);
         return true;
     }
 
@@ -287,10 +289,6 @@ public class LoginServer {
         if (room == null || !room.isGroup())
             return false;
         room.removeMember(username);
-        // حذف گروه از لیست چت‌های شخصی کاربر
-        List<ChatRoom> userChats = userChatsMap.get(username);
-        if (userChats != null)
-            userChats.removeIf(r -> r.getId().equals(chatId));
         return true;
     }
 
@@ -298,25 +296,16 @@ public class LoginServer {
         ChatRoom room = findChatRoom(username, chatId);
         if (room == null || !room.isGroup())
             return false;
-        if (!registeredMap.containsKey(newMemberUsername))
-            return false;
         room.addMember(newMemberUsername);
-        // اضافه کردن گروه به لیست چت‌های شخصی عضو جدید
-        List<ChatRoom> memberChats = userChatsMap.computeIfAbsent(newMemberUsername, k -> new ArrayList<>());
-        boolean alreadyIn = memberChats.stream().anyMatch(r -> r.getId().equals(chatId));
-        if (!alreadyIn)
-            memberChats.add(room);
         return true;
     }
 
-    // FIX 3: updateProfile اکنون واقعاً نام کاربری را آپدیت می‌کند
     public boolean updateProfile(String username, String newName, String newAvatarUrl) {
         User user = registeredMap.get(username);
         if (user == null)
             return false;
 
         if (newName != null && !newName.isBlank()) {
-            user.setUsername(newName);
         }
         return true;
     }
@@ -326,9 +315,6 @@ public class LoginServer {
         if (currentUser == null)
             return "USER_NOT_FOUND";
 
-        if (newId == null || newId.isBlank())
-            return "INVALID_ID";
-
         for (User u : registeredMap.values()) {
             if (u.getID().equals(newId) && !u.getUsername().equals(username)) {
                 return "DUPLICATE_ID";
@@ -336,7 +322,6 @@ public class LoginServer {
         }
 
         currentUser.setID(newId);
-        saveUsersToFile();
         return "SUCCESS";
     }
 
@@ -354,7 +339,7 @@ public class LoginServer {
 
         registeredMap.remove(username);
         userChatsMap.remove(username);
-        saveUsersToFile();
+
         return true;
     }
 
@@ -383,7 +368,6 @@ public class LoginServer {
 
         currentUser.getContacts().add(targetUser.getUsername());
         createPrivateChatRoom(username, targetUser.getUsername());
-        saveUsersToFile();
 
         return "SUCCESS";
     }
@@ -405,17 +389,14 @@ public class LoginServer {
     }
 
     public boolean createNewGroup(String creatorUsername, String groupName, List<String> initialMembers) {
-        if (groupName == null || groupName.isBlank())
-            return false;
-
         String groupId = "group_" + System.currentTimeMillis();
+
         ChatRoom newGroup = new ChatRoom(groupId, groupName, "assets/group_avatar.png", true);
         newGroup.addMember(creatorUsername);
 
         if (initialMembers != null) {
             for (String member : initialMembers) {
-                if (registeredMap.containsKey(member))
-                    newGroup.addMember(member);
+                newGroup.addMember(member);
             }
         }
 
@@ -438,13 +419,12 @@ public class LoginServer {
     public void printReportedMessages() {
         System.out.println("\n--- لیست پیام‌های گزارش شده به ادمین ---");
         int count = 0;
-        Set<String> seenIds = new HashSet<>();
         for (List<ChatRoom> chats : userChatsMap.values()) {
             for (ChatRoom room : chats) {
                 for (ChatMessage msg : room.getMessages()) {
-                    if (msg.isReported() && seenIds.add(msg.getId())) {
+                    if (msg.isReported()) {
                         count++;
-                        System.out.printf("[%d] چت: %s | فرستنده: %s | محتوا: \"%s\"\n",
+                        System.out.printf("[%d] چت: %s | فرستنده اسپم: %s | محتوای پیام: \"%s\"\n",
                                 count, room.getName(), msg.getSender(), msg.getContent());
                     }
                 }
@@ -456,6 +436,7 @@ public class LoginServer {
         System.out.println("---------------------------------------");
     }
 
+    // ذخیره کل کاربران سیستم در فایل متنی users.txt
     private synchronized void saveUsersToFile() {
         try (PrintWriter writer = new PrintWriter(
                 new OutputStreamWriter(new FileOutputStream(USERS_FILE), StandardCharsets.UTF_8))) {
@@ -495,46 +476,34 @@ public class LoginServer {
                 if (parts.length < 4)
                     continue;
 
-                String uname = parts[0];
-                String pass = parts[1];
+                String username = parts[0];
+                String password = parts[1];
                 String userId = parts[2];
                 boolean isDarkMode = Boolean.parseBoolean(parts[3]);
 
-                User user = new User(uname, userId, pass);
+                User user = new User(username, userId, password);
+                user.setID(userId);
                 user.setDarkMode(isDarkMode);
 
                 if (parts.length == 5 && !parts[4].isEmpty()) {
                     for (String contact : parts[4].split(",")) {
-                        if (!contact.isBlank())
-                            user.getContacts().add(contact);
+                        user.getContacts().add(contact);
                     }
                 }
-                registeredMap.put(uname, user);
+                registeredMap.put(username, user);
             }
         } catch (IOException e) {
             System.err.println("خطا در لود کاربران: " + e.getMessage());
         }
 
-        // بارگذاری چت‌های خصوصی از فایل
         for (User user : registeredMap.values()) {
             List<ChatRoom> rooms = userChatsMap.computeIfAbsent(user.getUsername(), k -> new ArrayList<>());
+            for (String contactJson : user.getContacts()) {
+                String roomId = generatePrivateRoomId(user.getUsername(), contactJson);
+                ChatRoom room = new ChatRoom(roomId, contactJson, "assets/default_avatar.png", false);
 
-            // اضافه کردن Saved Messages برای هر کاربر
-            boolean hasSaved = rooms.stream().anyMatch(r -> r.getId().equals("saved_messages"));
-            if (!hasSaved) {
-                ChatRoom savedMessages = new ChatRoom("saved_messages", "Saved Messages", "assets/saved.png", false);
-                rooms.add(0, savedMessages);
-            }
-
-            for (String contact : user.getContacts()) {
-                String roomId = generatePrivateRoomId(user.getUsername(), contact);
-                // جلوگیری از اضافه شدن تکراری
-                boolean exists = rooms.stream().anyMatch(r -> r.getId().equals(roomId));
-                if (!exists) {
-                    ChatRoom room = new ChatRoom(roomId, contact, "assets/default_avatar.png", false);
-                    loadChatMessagesFromFile(room);
-                    rooms.add(room);
-                }
+                loadChatMessagesFromFile(room);
+                rooms.add(room);
             }
         }
     }
@@ -606,4 +575,5 @@ public class LoginServer {
     public Map<String, List<ChatRoom>> getUserChatsMap() {
         return userChatsMap;
     }
+
 }
