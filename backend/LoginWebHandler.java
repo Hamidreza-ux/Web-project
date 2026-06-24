@@ -41,23 +41,23 @@ public class LoginWebHandler implements HttpHandler {
 
                 switch (result) {
                     case LoginResult.SUCCESS:
-                        statusCode = 200;
+                        statusCode = 200;   //ok
                         jsonResponse = "{\"status\":\"success\", \"message\":\"ورود با موفقیت انجام شد!\"}";
                         break;
                     case LoginResult.USER_NOT_FOUND:
-                        statusCode = 404;
+                        statusCode = 404;   //not found
                         jsonResponse = "{\"status\":\"error\", \"message\":\"کاربری با این نام کاربری یافت نشد.\"}";
                         break;
                     case LoginResult.WRONG_PASSWORD:
-                        statusCode = 401;
+                        statusCode = 401;   //unauthorized
                         jsonResponse = "{\"status\":\"error\", \"message\":\"رمز عبور اشتباه است.\"}";
                         break;
                     case LoginResult.ACCOUNT_LOCKED:
-                        statusCode = 403;
+                        statusCode = 403;    //forbidden
                         jsonResponse = "{\"status\":\"error\", \"message\":\"حساب شما به دلیل ۵ بار ورود اشتباه موقتاً مسدود شده است.\"}";
                         break;
                     default:
-                        statusCode = 500;
+                        statusCode = 500;  //server error
                         jsonResponse = "{\"status\":\"error\", \"message\":\"خطای داخلی سرور\"}";
                 }
 

@@ -1,40 +1,39 @@
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.sun.net.httpserver.*;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 
 public class SignupWebHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        // برای اتصال بدون دردسر به فرانت
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "POST, OPTIONS");
         exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
 
-        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {   // اجازه اولیه قبل پست
-            exchange.sendResponseHeaders(204, -1);
+        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) { // اجازه اولیه قبل پست
+            exchange.sendResponseHeaders(204, -1); // درخواست موفق بدون ارسال متن 204
             return;
         }
 
         if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
             try {
                 InputStream is = exchange.getRequestBody();
-                
+
                 String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
                 String username = parseJsonFieldWhithRegex(body, "username");
-                String id = parseJsonFieldWhithRegex(body, "id");
+                String id = parseJsonFieldWhithRegex(body, "userId");
                 String password = parseJsonFieldWhithRegex(body, "password");
                 String confirmPassword = parseJsonFieldWhithRegex(body, "confirmPassword");
 
-                /*if (username.isBlank() || id.isBlank() || password.isBlank()
-                        || confirmPassword.isBlank()) {
-                    sendResponse(exchange, 400,
-                            "{\"status\":\"error\", \"message\":\"پر کردن تمام فیلدها الزامی است.\"}");
-                    return;
-                }*/
+                /*
+                 * if (username.isBlank() || id.isBlank() || password.isBlank()
+                 * || confirmPassword.isBlank()) {
+                 * sendResponse(exchange, 400,
+                 * "{\"status\":\"error\", \"message\":\"پر کردن تمام فیلدها الزامی است.\"}");
+                 * return;
+                 * }
+                 */
 
                 LoginServer loginServer = LoginServer.getInstance();
                 SignupResult result = loginServer.register(username, id, password, confirmPassword);
@@ -44,15 +43,15 @@ public class SignupWebHandler implements HttpHandler {
 
                 switch (result) {
                     case SignupResult.SUCCESS:
-                        statusCode = 201;
+                        statusCode = 201; // created
                         jsonResponse = "{\"status\":\"success\", \"message\":\"ثبت‌نام با موفقیت انجام شد! در حال انتقال به صفحه لاگین...\"}";
                         break;
                     case SignupResult.PASSWORD_MISMATCH:
-                        statusCode = 400;
+                        statusCode = 400; // bad request
                         jsonResponse = "{\"status\":\"error\", \"message\":\"رمز عبور و تکرار آن با یکدیگر مطابقت ندارند.\"}";
                         break;
                     case SignupResult.DUPLICATE_USERNAME:
-                        statusCode = 409;   //conflict
+                        statusCode = 409; // conflict
                         jsonResponse = "{\"status\":\"error\", \"message\":\"این نام کاربری قبلاً توسط شخص دیگری انتخاب شده است.\"}";
                         break;
                     case SignupResult.DUPLICATE_ID:
@@ -60,7 +59,7 @@ public class SignupWebHandler implements HttpHandler {
                         jsonResponse = "{\"status\":\"error\", \"message\":\"این آیدی تکراری است و متعلق به کاربر دیگری می‌باشد.\"}";
                         break;
                     case SignupResult.INVALID_PASSWORD:
-                        statusCode = 422;
+                        statusCode = 422; // اشتباه بودن محتوای مثلا رمز
                         jsonResponse = "{\"status\":\"error\", \"message\":\"رمز عبور ضعیف است! باید شامل حداقل ۸ کاراکتر، حرف بزرگ، حرف کوچک، عدد، کاراکتر خاص بوده و شامل نام کاربری نباشد.\"}";
                         break;
                     default:
@@ -74,10 +73,11 @@ public class SignupWebHandler implements HttpHandler {
                 sendResponse(exchange, 500, "{\"status\":\"error\", \"message\":\"خطا در پردازش درخواست ثبت‌نام\"}");
             }
         } else {
-            exchange.sendResponseHeaders(405, -1);
+            exchange.sendResponseHeaders(405, -1); // methode is not correct
         }
     }
 
+    // ارسال پاسخ برای مرورگر
     public static void sendResponse(HttpExchange exchange, int statusCode, String jsonResponse) throws IOException {
         byte[] responseBytes = jsonResponse.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
@@ -87,6 +87,7 @@ public class SignupWebHandler implements HttpHandler {
         os.close();
     }
 
+    // جداسازی جز مورد نظر از جیسون
     public static String parseJsonFieldWhithRegex(String json, String field) {
         try {
             String regex = String.format("\"%s\"\\s*:\\s*\"([^\"]*)\"", field);
