@@ -35,8 +35,10 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                 messageBox.innerText = result.data.message;
                 messageBox.classList.add('success');
 
+                localStorage.setItem('username', usernameInput); // ذخیره نام کاربری
+
                 setTimeout(() => {
-                    alert("انتقال به داشبورد اصلی سایت...");
+                    window.location.href = 'MainPage.html'; // انتقال به صفحه اصلی
                 }, 1500);
             } else {
                 messageBox.innerText = result.data.message;
