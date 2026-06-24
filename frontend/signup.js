@@ -14,7 +14,7 @@ document.getElementById('SignupForm').addEventListener('submit', function (event
         username: usernameInput,
         password: passwordInput,
         confirmPassword: confirmPasswordInput,
-        id: userIdInput
+        userId: userIdInput
     };
 
     fetch('http://localhost:8085/api/auth/signup', {
