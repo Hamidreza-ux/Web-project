@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>theme</title>
+    <link rel="stylesheet" href="MainPage.css">
+    <script src="setting.js" defer></script>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <a href="Setting.html" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </a>
+            <h1 class="header-main-title">ظاهر برنامه</h1>
+            <div class="spacer"></div>
+        </div>
+
+        <div class="theme-page-content">
+            <p class="theme-page-desc">حالت نمایش مورد نظر خود را انتخاب کنید</p>
+
+            <div class="theme-options-grid">
+
+                <!-- حالت روشن -->
+                <label class="theme-card" id="card-light">
+                    <input type="radio" name="theme" value="light" class="theme-radio">
+                    <div class="theme-preview theme-preview-light">
+                        <div class="preview-header-bar"></div>
+                        <div class="preview-line long"></div>
+                        <div class="preview-line short"></div>
+                        <div class="preview-line medium"></div>
+                    </div>
+                    <div class="theme-card-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                            <circle cx="12" cy="12" r="5"/>
+                            <line x1="12" y1="1" x2="12" y2="3"/>
+                            <line x1="12" y1="21" x2="12" y2="23"/>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                            <line x1="1" y1="12" x2="3" y2="12"/>
+                            <line x1="21" y1="12" x2="23" y2="12"/>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                        </svg>
+                        روشن
+                    </div>
+                    <div class="theme-check-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="16" height="16">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                </label>
+
+                <!-- حالت تاریک -->
+                <label class="theme-card" id="card-dark">
+                    <input type="radio" name="theme" value="dark" class="theme-radio">
+                    <div class="theme-preview theme-preview-dark">
+                        <div class="preview-header-bar"></div>
+                        <div class="preview-line long"></div>
+                        <div class="preview-line short"></div>
+                        <div class="preview-line medium"></div>
+                    </div>
+                    <div class="theme-card-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                        </svg>
+                        تاریک
+                    </div>
+                    <div class="theme-check-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="16" height="16">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                </label>
+
+            </div>
+        </div>
+
+        <div class="bottom-btn-container">
+            <button id="saveThemeBtn" class="btn btn-primary" onclick="saveTheme()">ذخیره</button>
+        </div>
+    </div>
+</body>
+</html>
