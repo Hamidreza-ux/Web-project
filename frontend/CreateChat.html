@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreateChat</title>
+    <link rel="stylesheet" href="styleCreateChat.css">
+    <script src="createChat.js" defer></script>
+</head>
+<body>
+
+    <div class="chat-creation-container">
+        <header class="page-header">
+            <h1>ایجاد گفت‌وگو جدید</h1>
+        </header>
+
+        <main class="content-area">
+            
+            <section class="card">
+                <h2>ایجاد گروه جدید</h2>
+                <form id="create-group-form">
+                    <input type="text" id="group-name" placeholder="نام گروه را وارد کنید" required>
+                    <button type="submit" class="btn btn-group">ایجاد گروه</button>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>ایجاد مخاطب جدید</h2>
+                <form id="add-contact-form">
+                    <input type="text" id="contact-id" placeholder="آیدی حساب کاربری مخاطب..." required>
+                    <button type="submit" class="btn btn-contact">افزودن مخاطب</button>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>لیست مخاطبین</h2>
+                <ul id="contacts-list" class="contacts-list">
+                </ul>
+            </section>
+
+        </main>
+    </div>
+
+</body>
+</html>
