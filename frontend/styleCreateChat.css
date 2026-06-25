@@ -1,0 +1,158 @@
+/* بازنشانی تنظیمات اولیه */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+    direction: rtl;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+/* کانتینر اصلی - محدود کردن عرض و تراز وسط */
+.chat-creation-container {
+    width: 100%;
+    max-width: 600px; /* عرض بهینه برای نمایش عمودی و شبیه به اپلیکیشن موبایل/وب چت */
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* هدر صفحه */
+.page-header h1 {
+    font-size: 22px;
+    color: #1e293b;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+/* بخش محتوا - چیدمان کارت‌ها کاملاً زیر هم (ستونی) */
+.content-area {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* فاصله عمودی یکنواخت بین کارت‌ها */
+}
+
+/* استایل کارت‌ها */
+.card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.card h2 {
+    font-size: 16px;
+    color: #475569;
+    font-weight: 600;
+}
+
+/* فرم‌های درون کارت‌ها */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* فاصله عمودی بین اینپوت و دکمه */
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: #f8fafc;
+}
+
+input[type="text"]:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background-color: #ffffff;
+}
+
+/* استایل دکمه‌ها */
+.btn {
+    width: 100%; /* دکمه به صورت تمام عرض در راستای عمودی */
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn:active {
+    transform: scale(0.99);
+}
+
+.btn-group {
+    background-color: #10b981;
+    color: white;
+}
+
+.btn-group:hover {
+    background-color: #059669;
+}
+
+.btn-contact {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.btn-contact:hover {
+    background-color: #2563eb;
+}
+
+/* لیست مخاطبین */
+.contacts-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* فاصله عمودی بین ردیف‌های مخاطبین */
+}
+
+/* آیتم‌های لیست مخاطبین */
+.contact-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.contact-item:hover {
+    background-color: #f1f5f9;
+}
+
+.contact-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.contact-name {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 14px;
+}
+
+.contact-id {
+    font-size: 13px;
+    color: #64748b;
+    direction: ltr;
+}
