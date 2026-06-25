@@ -3,29 +3,14 @@
     document.documentElement.setAttribute('data-theme', theme);
 })();
 
-
-// -------------------------------------------------------
-// ۲. کدهای مربوط به هر صفحه، بعد از لود کامل DOM
-// -------------------------------------------------------
+// کدهای مربوط به هر صفحه، بعد از لود کامل DOM
 document.addEventListener('DOMContentLoaded', function () {
 
-    /* ---- صفحه تنظیمات (Setting.html) ---- */
+    /* ---- صفحه تنظیمات ---- */
+
     const displayName     = document.getElementById('displayName');
     const displayUsername = document.getElementById('displayUsername');
     const displayTheme    = document.getElementById('displayTheme');
-
-    /* ---- آواتار خودکار بر اساس نام کاربری ---- */
-    const currentUser = localStorage.getItem('userUsername') || localStorage.getItem('userName') || 'default';
-    const avatarUrl = 'https://api.dicebear.com/7.x/bottts/svg?seed=' + currentUser;
-
-    // در Setting.html
-    if (userAvatarEl && !localStorage.getItem('userAvatar')) {
-        userAvatarEl.src = avatarUrl;
-    }
-    // در edit_profile.html
-    if (editProfilePic && !localStorage.getItem('userAvatar')) {
-        editProfilePic.src = avatarUrl;
-    }
 
     if (displayName) {
         displayName.textContent = localStorage.getItem('userName') || 'نام کاربر';
@@ -39,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    /* ---- صفحه ویرایش نام (edit_name.html) ---- */
+    /* ---- ویرایش نام ---- */
     const editNameInput = document.getElementById('editNameInput');
     const saveNameBtn   = document.getElementById('saveNameBtn');
 
@@ -71,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    /* ---- صفحه ویرایش شناسه (edit_username.html) ---- */
+    /* ---- ویرایش شناسه ---- */
     const editUsernameInput = document.getElementById('editUsernameInput');
     const saveUsernameBtn   = document.getElementById('saveUsernameBtn');
 
@@ -101,23 +86,23 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-
-    /* ---- صفحه ویرایش پروفایل (edit_profile.html) ---- */
+    /* ---- ویرایش پروفایل ---- */
     const editProfilePic = document.getElementById('editProfilePic');
     if (editProfilePic) {
-        // نمایش عکس ذخیره‌شده
+        const currentUser = localStorage.getItem('userUsername') || localStorage.getItem('userName') || 'default';
         const savedPic = localStorage.getItem('userAvatar');
-        if (savedPic) editProfilePic.src = savedPic;
+        editProfilePic.src = savedPic || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + currentUser;
     }
 
-    /* ---- صفحه تنظیمات: نمایش عکس پروفایل ---- */
+    /* ---- نمایش عکس پروفایل در صفحه تنظیمات ---- */
     const userAvatarEl = document.getElementById('userAvatar');
     if (userAvatarEl) {
+        const currentUser = localStorage.getItem('userUsername') || localStorage.getItem('userName') || 'default';
         const savedPic = localStorage.getItem('userAvatar');
-        if (savedPic) userAvatarEl.src = savedPic;
+        userAvatarEl.src = savedPic || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + currentUser;
     }
 
-    /* ---- صفحه انتخاب تم (theme.html) ---- */
+    /* ---- صفحه انتخاب تم ---- */
     const themeRadios = document.querySelectorAll('.theme-radio');
         if (themeRadios.length > 0) {
             const savedTheme = localStorage.getItem('appTheme') || 'light';
@@ -135,9 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// -------------------------------------------------------
-// ۳. تابع پیش‌نمایش عکس (فراخوانی از HTML)
-// -------------------------------------------------------
+// تابع پیش‌نمایش عکس (فراخوانی از HTML)
 function previewImage(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -152,8 +135,6 @@ function previewImage(event) {
     };
     reader.readAsDataURL(file);
 }
-
-
 
 function updateCardStyles(selected) {
     document.querySelectorAll('.theme-card').forEach(card => {

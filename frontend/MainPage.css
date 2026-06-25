@@ -2,6 +2,10 @@
    مَت - MainPage.css
    ========================================== */
 
+* {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 :root {
     --sidebar-bg: #1e2a35;
     --sidebar-hover: #2a3942;
@@ -922,82 +926,33 @@ body {
 }
 
 
-/*حالت روز*/
-:root {
-    --sidebar-bg: #ffffff;
-    --sidebar-hover: #f0f2f5;
-    --header-bg: #f0f2f5;
-    --chat-bg: #e5ddd5;
-    --msg-bg: #efeae2;
-    --msg-out: #d9fdd3;
-    --msg-in: #ffffff;
-    --input-bg: #f0f2f5;
-    --primary: #00a884;
-    --text-main: #111b21;
-    --text-sub: #667781;
-    --text-name: #111b21;
-    --border: #d1d7db;
-    --danger: #f15c6d;
-    --saved-color: #027eb5;
-}
-
-/*حالت شب*/
-body.dark-mode {
-    --sidebar-bg: #1e2a35;
-    --sidebar-hover: #2a3942;
-    --header-bg: #202c33;
-    --chat-bg: #0b141a;
-    --msg-bg: #111b21;
-    --msg-out: #005c4b;
-    --msg-in: #202c33;
-    --input-bg: #202c33;
-    --primary: #00a884;
-    --text-main: #e9edef;
-    --text-sub: #8696a0;
-    --text-name: #ffffff;
-    --border: #2a3942;
-    --danger: #f15c6d;
-    --saved-color: #53bdeb;
-}
-
-/* ======================================= */
-/* تم شب و روز                            */
-/* ======================================= */
+/* یکپارچه‌سازی تمام متغیرها در دو حالت */
 :root, [data-theme="light"] {
     --bg-app: #ffffff;
     --bg-page: #f3f4f6;
     --bg-hover: #f9fafb;
     --bg-header: #ffffff;
     --bg-bottom-btn: #ffffff;
-    --color-text-primary: #1f2937;
-    --color-text-secondary: #6b7280;
-    --color-text-muted: #9ca3af;
-    --color-border: #f0f0f0;
-    --color-border-input: #d1d5db;
-    --color-border-list: #f3f4f6;
-    --label-bg: white;
-    --avatar-border: #e5e7eb;
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+    --border-color: #e5e7eb;
 }
 
-[data-theme="dark"] {
+[data-theme="dark"], .dark-mode {
     --bg-app: #1f2937;
     --bg-page: #111827;
     --bg-hover: #374151;
     --bg-header: #1f2937;
     --bg-bottom-btn: #1f2937;
-    --color-text-primary: #f9fafb;
-    --color-text-secondary: #9ca3af;
-    --color-text-muted: #6b7280;
-    --color-border: #374151;
-    --color-border-input: #4b5563;
-    --color-border-list: #374151;
-    --label-bg: #1f2937;
-    --avatar-border: #374151;
+    --text-main: #f9fafb;
+    --text-muted: #9ca3af;
+    --border-color: #374151;
 }
 
-body { background-color: var(--bg-page); color: var(--color-text-primary); transition: background-color 0.3s, color 0.3s; }
-.app-container { background-color: var(--bg-app); }
-.header { background: var(--bg-header); border-bottom-color: var(--color-border); }
+
+body { background-color: var(--bg-page) !important; color: var(--text-main); margin: 0 ;transition: background-color 0.3s, color 0.3s; }
+.app-container { background-color: var(--bg-app); color: var(--text-main); }
+.header { background: var(--bg-header) !important; color: var(--text-main);border-bottom-color: 1px solid var(--color-border); }
 .header-main-title, .header-title { color: var(--color-text-primary); }
 .back-link, .icon-btn { color: var(--color-text-secondary); }
 .list-item { border-bottom-color: var(--color-border-list); color: var(--color-text-primary); }
