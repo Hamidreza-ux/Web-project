@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit-user-name</title>
+    <link rel="stylesheet" href="MainPage.css">
+    <script src="setting.js" defer></script>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <a href="Setting.html" class="back-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></a>
+            <h1 class="header-title">شناسه کاربری</h1>
+            <div class="spacer"></div>
+        </div>
+
+        <div class="form-container">
+            <div class="input-group">
+                <!-- اینجا آیدی برای ویرایش شناسه -->
+                <input type="text" id="editUsernameInput" class="form-input" placeholder=" ">
+                <label for="editUsernameInput" class="form-label">شناسه کاربری</label>
+            </div>
+
+            <div class="info-box">
+                <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                <div class="info-text">
+                    <p>شناسه کاربری جدید خود را وارد کنید</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-btn-container">
+            <button id="saveUsernameBtn" class="btn btn-disabled" disabled>ذخیره</button>
+        </div>
+    </div>
+</body>
+</html>
