@@ -29,8 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     document.getElementById('userName').textContent = state.username;// نمایش نام کاربر در بالای صفحه چت
-    document.getElementById('userAvatar').textContent = state.username.charAt(0).toUpperCase();
-    
+    const currentLoggedInUser = localStorage.getItem('userUsername') || localStorage.getItem('userName') || 'default';
+    const savedPic = localStorage.getItem('userAvatar');
+    const avatarUrl = savedPic || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + currentLoggedInUser;
+    document.getElementById('userAvatar').style.backgroundImage = `url('${avatarUrl}')`;
+
     loadChatList();
     
     state.chatPollInterval = setInterval(loadChatList, 5000);
