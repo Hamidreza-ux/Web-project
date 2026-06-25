@@ -913,3 +913,530 @@ body {
         width: 100%;
     }
 }
+
+
+@import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.3/Vazirmatn-font-face.css');
+
+* {
+    box-sizing: border-box;
+}
+
+
+/*حالت روز*/
+:root {
+    --sidebar-bg: #ffffff;
+    --sidebar-hover: #f0f2f5;
+    --header-bg: #f0f2f5;
+    --chat-bg: #e5ddd5;
+    --msg-bg: #efeae2;
+    --msg-out: #d9fdd3;
+    --msg-in: #ffffff;
+    --input-bg: #f0f2f5;
+    --primary: #00a884;
+    --text-main: #111b21;
+    --text-sub: #667781;
+    --text-name: #111b21;
+    --border: #d1d7db;
+    --danger: #f15c6d;
+    --saved-color: #027eb5;
+}
+
+/*حالت شب*/
+body.dark-mode {
+    --sidebar-bg: #1e2a35;
+    --sidebar-hover: #2a3942;
+    --header-bg: #202c33;
+    --chat-bg: #0b141a;
+    --msg-bg: #111b21;
+    --msg-out: #005c4b;
+    --msg-in: #202c33;
+    --input-bg: #202c33;
+    --primary: #00a884;
+    --text-main: #e9edef;
+    --text-sub: #8696a0;
+    --text-name: #ffffff;
+    --border: #2a3942;
+    --danger: #f15c6d;
+    --saved-color: #53bdeb;
+}
+
+/* ======================================= */
+/* تم شب و روز                            */
+/* ======================================= */
+:root, [data-theme="light"] {
+    --bg-app: #ffffff;
+    --bg-page: #f3f4f6;
+    --bg-hover: #f9fafb;
+    --bg-header: #ffffff;
+    --bg-bottom-btn: #ffffff;
+    --color-text-primary: #1f2937;
+    --color-text-secondary: #6b7280;
+    --color-text-muted: #9ca3af;
+    --color-border: #f0f0f0;
+    --color-border-input: #d1d5db;
+    --color-border-list: #f3f4f6;
+    --label-bg: white;
+    --avatar-border: #e5e7eb;
+}
+
+[data-theme="dark"] {
+    --bg-app: #1f2937;
+    --bg-page: #111827;
+    --bg-hover: #374151;
+    --bg-header: #1f2937;
+    --bg-bottom-btn: #1f2937;
+    --color-text-primary: #f9fafb;
+    --color-text-secondary: #9ca3af;
+    --color-text-muted: #6b7280;
+    --color-border: #374151;
+    --color-border-input: #4b5563;
+    --color-border-list: #374151;
+    --label-bg: #1f2937;
+    --avatar-border: #374151;
+}
+
+body { background-color: var(--bg-page); color: var(--color-text-primary); transition: background-color 0.3s, color 0.3s; }
+.app-container { background-color: var(--bg-app); }
+.header { background: var(--bg-header); border-bottom-color: var(--color-border); }
+.header-main-title, .header-title { color: var(--color-text-primary); }
+.back-link, .icon-btn { color: var(--color-text-secondary); }
+.list-item { border-bottom-color: var(--color-border-list); color: var(--color-text-primary); }
+.list-item:hover { background-color: var(--bg-hover); }
+.item-label { color: var(--color-text-muted); }
+.item-value, .item-text-only { color: var(--color-text-primary); }
+.item-icon { color: var(--color-text-secondary); }
+.form-input { border-color: var(--color-border-input); color: var(--color-text-primary); }
+.form-label { color: var(--color-text-secondary); background: var(--label-bg); }
+.form-input:focus ~ .form-label,
+.form-input:not(:placeholder-shown) ~ .form-label { color: #10b981; background: var(--label-bg); }
+.info-text, .info-icon { color: var(--color-text-secondary); }
+.bottom-btn-container { background: var(--bg-bottom-btn); border-top-color: var(--color-border); }
+.delete-desc { color: var(--color-text-secondary); }
+.upload-option { border-color: var(--color-border-input); color: var(--color-text-primary); }
+.upload-option:hover { background-color: var(--bg-hover); }
+.avatar { border-color: var(--avatar-border); }
+.edit-badge { background: var(--bg-app); border-color: var(--avatar-border); }
+
+
+body {
+    font-family: 'Vazirmatn', sans-serif;
+    background-color: #f3f4f6; /* رنگ پس زمینه سایت */
+    margin: 0;
+    padding: 0;
+    color: #1f2937;
+    display: flex;
+    justify-content: center;
+}
+
+/* ظرف اصلی برنامه (ابعاد موبایل) */
+.app-container {
+    width: 100%;
+    max-width: 450px;
+    background-color: #ffffff;
+    min-height: 100vh;
+    box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* ======================================= */
+/* استایل‌های هدر صفحات */
+/* ======================================= */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+}
+.header-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #6b7280;
+    margin: 0;
+}
+.header-main-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* دکمه ها و لینک‌های بدون استایل پیش‌فرض */
+.back-link, .icon-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    padding: 4px;
+}
+.back-link svg, .icon-btn svg {
+    width: 24px;
+    height: 24px;
+}
+.spacer {
+    width: 24px;
+    height: 24px;
+}
+
+/* ======================================= */
+/* صفحه تنظیمات اصلی (پروفایل و لیست) */
+/* ======================================= */
+.profile-section {
+    display: flex;
+    justify-content: center;
+    padding: 30px 0 20px 0;
+    text-decoration: none;
+    color: inherit;
+}
+.avatar-wrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+.avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e5e7eb;
+    background-color: #eee;
+}
+.edit-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: white;
+    border-radius: 50%;
+    padding: 6px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.edit-badge svg {
+    width: 20px;
+    height: 20px;
+    color: #6b7280;
+}
+
+.list-container {
+    padding: 10px 20px 20px 20px;
+}
+.list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    text-decoration: none;
+    color: inherit;
+    border-bottom: 1px solid #f3f4f6;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.list-item:last-child {
+    border-bottom: none;
+}
+.list-item:hover {
+    background-color: #f9fafb;
+}
+.item-text {
+    display: flex;
+    flex-direction: column;
+}
+.item-label {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-bottom: 2px;
+}
+.item-value {
+    font-size: 15px;
+    font-weight: 500;
+    color: #1f2937;
+}
+.item-text-only {
+    font-size: 15px;
+    color: #1f2937;
+}
+.text-danger {
+    color: #dc2626 !important;
+}
+.item-icon {
+    width: 20px;
+    height: 20px;
+    color: #6b7280;
+}
+
+/* ======================================= */
+/* استایل‌های فرم‌ها (ورودی‌ها و لیبل‌های شناور) */
+/* ======================================= */
+.form-container {
+    padding: 20px 20px 0 20px;
+    flex-grow: 1;
+}
+.input-group {
+    position: relative;
+    margin-top: 20px;
+    margin-bottom: 24px;
+}
+.form-input {
+    width: 100%;
+    padding: 16px 16px 12px 16px;
+    background: transparent;
+    border: 2px solid #d1d5db;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    color: #1f2937;
+    transition: all 0.2s;
+}
+/* افکت لیبل شناور */
+.form-label {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    padding: 0 6px;
+    font-size: 14px;
+    color: #6b7280;
+    transition: 0.2s ease all;
+    pointer-events: none;
+}
+/* وقتی روی فیلد کلیک می‌کنید یا مقداری در آن است */
+.form-input:focus {
+    border-color: #10b981;
+}
+.form-input:focus ~ .form-label,
+.form-input:not(:placeholder-shown) ~ .form-label {
+    top: -8px;
+    right: 16px;
+    font-size: 12px;
+    color: #10b981;
+}
+
+/* باکس اطلاعات و نکات (زیر فیلدها) */
+.info-box {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 0 4px;
+}
+.info-icon {
+    width: 20px;
+    height: 20px;
+    color: #6b7280;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+.info-text {
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.6;
+}
+.info-text ul {
+    margin: 8px 0 0 0;
+    padding-right: 20px;
+}
+.info-text li {
+    margin-bottom: 4px;
+}
+
+/* ======================================= */
+/* صفحه حذف حساب */
+/* ======================================= */
+.delete-content {
+    padding: 20px;
+    flex-grow: 1;
+}
+.delete-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    margin-top: 0;
+}
+.delete-desc {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #4b5563;
+    margin-bottom: 20px;
+}
+.delete-list {
+    list-style: disc;
+    padding-right: 20px;
+    color: #4b5563;
+    line-height: 2;
+    font-size: 14px;
+}
+
+/* ======================================= */
+/* صفحه ویرایش عکس */
+/* ======================================= */
+.pic-container {
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.upload-option {
+    margin: 0 20px;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition: 0.2s;
+}
+.upload-option:hover {
+    background-color: #f9fafb;
+}
+.upload-icon {
+    width: 24px;
+    height: 24px;
+    color: #6b7280;
+}
+
+/* ======================================= */
+/* دکمه‌های پایینی صفحات */
+/* ======================================= */
+.bottom-btn-container {
+    padding: 20px;
+    background: white;
+    border-top: 1px solid #f3f4f6;
+    margin-top: auto; /* هول دادن به پایین صفحه */
+}
+.btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    transition: 0.2s;
+}
+.btn-disabled {
+    background-color: #e5e7eb;
+    color: #9ca3af;
+    cursor: default;
+}
+.btn-primary {
+    background-color: #2563eb;
+    color: white;
+}
+.btn-primary:hover:not(:disabled) {
+    background-color: #1d4ed8;
+}
+.btn-danger {
+    background-color: #dc2626;
+    color: white;
+}
+.btn-danger:hover {
+    background-color: #b91c1c;
+}
+
+/* ======================================= */
+/* استایل‌های صفحه انتخاب تم              */
+/* ======================================= */
+.theme-page-content {
+    padding: 24px 20px;
+    flex-grow: 1;
+}
+.theme-page-desc {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin-bottom: 28px;
+    text-align: center;
+}
+.theme-options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+.theme-card {
+    position: relative;
+    border: 2px solid var(--color-border-input);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+.theme-card:hover { border-color: #10b981; }
+.theme-card-selected {
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+.theme-radio { display: none; }
+.theme-preview {
+    padding: 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-grow: 1;
+}
+.theme-preview-light { background: #f9fafb; }
+.theme-preview-dark  { background: #1f2937; }
+.preview-header-bar {
+    height: 10px;
+    border-radius: 5px;
+    margin-bottom: 4px;
+}
+.theme-preview-light .preview-header-bar { background: #e5e7eb; }
+.theme-preview-dark  .preview-header-bar { background: #374151; }
+.preview-line { height: 8px; border-radius: 4px; }
+.theme-preview-light .preview-line { background: #d1d5db; }
+.theme-preview-dark  .preview-line { background: #4b5563; }
+.preview-line.long   { width: 90%; }
+.preview-line.medium { width: 70%; }
+.preview-line.short  { width: 50%; }
+.theme-card-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+    background: var(--bg-app);
+    transition: background 0.3s;
+}
+.theme-check-icon {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 24px;
+    height: 24px;
+    background: #10b981;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.2s, transform 0.2s;
+    color: white;
+}
+.theme-card-selected .theme-check-icon {
+    opacity: 1;
+    transform: scale(1);
+}
