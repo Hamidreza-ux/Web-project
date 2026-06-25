@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete-account</title>
+    <link rel="stylesheet" href="MainPage.css">
+    <script src="setting.js" defer></script>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <a href="index.html" class="back-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></a>
+            <div class="spacer"></div>
+        </div>
+
+        <div class="delete-content">
+            <h2 class="delete-title">توجه</h2>
+            <p class="delete-desc">با حذف حساب کاربری اطلاعات شما در برنامه حذف می‌شوند</p>
+
+        <div class="bottom-btn-container">//              با یک پنجره چک میکند که فرد میخواهد حساب را پاک کند یا خیر
+            <button class="btn btn-danger" onclick="if(confirm('آیا از حذف حساب خود مطمئن هستید؟')){alert('حساب شما حذف شد.'); window.location.href='index.html';}">حذف حساب کاربری</button>
+        </div>
+    </div>
+</body>
+</html>
