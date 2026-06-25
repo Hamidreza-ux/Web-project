@@ -1,11 +1,8 @@
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import java.io.IOException;
-import java.io.OutputStream;
+import com.sun.net.httpserver.*;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 
 public class ChatPageWebHandler implements HttpHandler {
 
@@ -30,9 +27,8 @@ public class ChatPageWebHandler implements HttpHandler {
         }
 
         LoginServer loginServer = LoginServer.getInstance();
-        String method = exchange.getRequestMethod();
 
-        if ("GET".equalsIgnoreCase(method)) {
+        if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
             ChatRoom room = loginServer.findChatRoom(username, chatId);
             if (room == null) {
                 sendResponse(exchange, 404, "{\"status\":\"error\",\"message\":\"چت یافت نشد.\"}");
@@ -46,7 +42,7 @@ public class ChatPageWebHandler implements HttpHandler {
             int addedCount = 0;
 
             for (ChatMessage msg : messages) {
-                if (searchMsg != null && !searchMsg.trim().isEmpty()) {
+                if (searchMsg != null && !searchMsg.isBlank()) {
                     if (!msg.getContent().toLowerCase().contains(searchMsg.toLowerCase())) {
                         continue;
                     }
@@ -68,8 +64,9 @@ public class ChatPageWebHandler implements HttpHandler {
             sendResponse(exchange, 200, json.toString());
         }
 
-        else if ("POST".equalsIgnoreCase(method)) {
-            String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+        else if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+            InputStream is = exchange.getRequestBody();
+            String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
             String content = parseJsonFieldWhithRegex(body, "content");
             boolean isFile = "true".equalsIgnoreCase(parseJsonFieldWhithRegex(body, "isFile"));
 
@@ -78,6 +75,7 @@ public class ChatPageWebHandler implements HttpHandler {
             if ("SUCCESS".equals(result)) {
                 sendResponse(exchange, 201, "{\"status\":\"success\",\"message\":\"پیام ارسال شد.\"}");
             } else if ("SPAM_DETECTED".equals(result)) {
+                //429 یعنی درخواست بیش از حد
                 sendResponse(exchange, 429,
                         "{\"status\":\"error\",\"message\":\"اسپم ممنوع! حداکثر ۵ پیام در ثانیه.\"}");
             } else if ("MESSAGE_TOO_LONG".equals(result)) {
@@ -87,8 +85,9 @@ public class ChatPageWebHandler implements HttpHandler {
             }
         }
 
-        else if ("PUT".equalsIgnoreCase(method)) {
-            String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+        else if ("PUT".equalsIgnoreCase(exchange.getRequestMethod())) {
+            InputStream is = exchange.getRequestBody();
+            String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
             String messageId = parseJsonFieldWhithRegex(body, "messageId");
             String action = parseJsonFieldWhithRegex(body, "action");
 
@@ -108,8 +107,9 @@ public class ChatPageWebHandler implements HttpHandler {
             }
         }
 
-        else if ("DELETE".equalsIgnoreCase(method)) {
-            String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+        else if ("DELETE".equalsIgnoreCase(exchange.getRequestMethod())) {
+            InputStream is = exchange.getRequestBody();
+            String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
             String messageId = parseJsonFieldWhithRegex(body, "messageId");
 
             boolean ok = loginServer.deleteMessage(username, chatId, messageId);

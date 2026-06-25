@@ -1,10 +1,7 @@
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import java.io.IOException;
-import java.io.OutputStream;
+import com.sun.net.httpserver.*;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 
 public class SettingsWebHandler implements HttpHandler {
 
@@ -15,12 +12,12 @@ public class SettingsWebHandler implements HttpHandler {
         exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, X-Username");
 
         if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
-            sendResponse(exchange, 204, "");
+            exchange.sendResponseHeaders(204, -1);
             return;
         }
 
         String username = exchange.getRequestHeaders().getFirst("X-Username");
-        if (username == null || username.trim().isEmpty()) {
+        if (username == null || username.isBlank()) {
             sendResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"کاربر احراز هویت نشده است.\"}");
             return;
         }
@@ -38,26 +35,27 @@ public class SettingsWebHandler implements HttpHandler {
             String json = "{"
                     + "\"username\":\"" + user.getUsername() + "\","
                     + "\"id\":\"" + user.getID() + "\","
+                    + "\"avatarUrl\":\"" + user.getAvatarURL() + "\","
                     + "\"isDarkMode\":" + user.isDarkMode()
                     + "}";
             sendResponse(exchange, 200, json);
         }
 
         else if ("POST".equalsIgnoreCase(method)) {
-            String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+            InputStream is = exchange.getRequestBody();
+            String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
             String action = parseJsonFieldWhithRegex(body, "action");
 
             if ("update_profile".equals(action)) {
-                String newName = parseJsonFieldWhithRegex(body, "newName");
                 String newAvatarUrl = parseJsonFieldWhithRegex(body, "newAvatarUrl"); // اگر خالی باشد یعنی عکس حذف شده
 
-                loginServer.updateProfile(username, newName, newAvatarUrl);
+                loginServer.updateProfile(username, newAvatarUrl);
                 sendResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"پروفایل آپدیت شد.\"}");
             }
 
             else if ("change_id".equals(action)) {
                 String newId = parseJsonFieldWhithRegex(body, "newId");
-                if (newId == null || newId.trim().isEmpty()) {
+                if (newId == null || newId.isBlank()) {
                     sendResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"آیدی نمی‌تواند خالی باشد.\"}");
                     return;
                 }

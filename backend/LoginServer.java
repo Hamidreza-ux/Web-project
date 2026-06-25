@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 public class LoginServer {
     private String username;
     private String password;
-    private static volatile LoginServer instance;
+    private static volatile LoginServer instance;   //valotile باعث سرعت در دیدن دیتای جدید می شود(multy threading)
 
     private final Map<String, User> registeredMap = new HashMap<>(); // چون هنوز به دیتابیس وصل نشدیم اطلاعات کاربر رو
                                                                      // به صورت
@@ -70,12 +70,6 @@ public class LoginServer {
 
     public synchronized SignupResult register(String username, String id, String password, String confirmPassword) {
 
-        List<ChatRoom> initialChats = new ArrayList<>();
-        ChatRoom savedMessages = new ChatRoom("saved_messages", "Saved Messages", "assets/saved.png", false);
-        savedMessages.addMessage(new ChatMessage("System", "به پیام‌های ذخیره شده خوش آمدید!", false));
-        initialChats.add(savedMessages);
-        userChatsMap.put(username, initialChats);
-
         if (!password.equals(confirmPassword)) {
             return SignupResult.PASSWORD_MISMATCH;
         }
@@ -93,6 +87,12 @@ public class LoginServer {
         if (registeredMap.containsKey(username)) {
             return SignupResult.ALREADY_EXISTS;
         }
+        List<ChatRoom> initialChats = new ArrayList<>();
+        ChatRoom savedMessages = new ChatRoom("saved_messages", "Saved Messages", false);
+        savedMessages.addMessage(new ChatMessage("System", "به پیام‌های ذخیره شده خوش آمدید!", false));
+        initialChats.add(savedMessages);
+        userChatsMap.put(username, initialChats);
+
         User newUser = new User(username, id, password);
         registeredMap.put(username, newUser);
         saveUsersToFile();
@@ -126,6 +126,7 @@ public class LoginServer {
             filteredChats.add(chat);
         }
 
+        //مرتب سازی بر اساس...
         filteredChats.sort((chat1, chat2) -> {
             // pin
             if (chat1.isPinned() && !chat2.isPinned())
@@ -224,8 +225,8 @@ public class LoginServer {
         }
 
         if (targetMsg != null) {
-            room.getMessages().remove(targetMsg);
             room.getHistory().add(targetMsg);
+            room.getMessages().remove(targetMsg);
             return true;
         }
         return false;
@@ -300,12 +301,13 @@ public class LoginServer {
         return true;
     }
 
-    public boolean updateProfile(String username, String newName, String newAvatarUrl) {
+    public boolean updateProfile(String username, String newAvatarUrl) {
         User user = registeredMap.get(username);
         if (user == null)
             return false;
 
-        if (newName != null && !newName.isBlank()) {
+        if (newAvatarUrl != null && !newAvatarUrl.isBlank()) {
+            user.setAvatarURL(newAvatarUrl);
         }
         return true;
     }
@@ -337,8 +339,8 @@ public class LoginServer {
         if (!registeredMap.containsKey(username))
             return false;
 
-        registeredMap.remove(username);
         userChatsMap.remove(username);
+        registeredMap.remove(username);
 
         return true;
     }
@@ -380,18 +382,18 @@ public class LoginServer {
                 return;
         }
 
-        ChatRoom roomForUser1 = new ChatRoom(user2, user2, "assets/default_avatar.png", false);
+        ChatRoom roomForUser1 = new ChatRoom(user2, user2, false);
         user1Chats.add(roomForUser1);
 
         List<ChatRoom> user2Chats = userChatsMap.computeIfAbsent(user2, k -> new ArrayList<>());
-        ChatRoom roomForUser2 = new ChatRoom(user1, user1, "assets/default_avatar.png", false);
+        ChatRoom roomForUser2 = new ChatRoom(user1, user1, false);
         user2Chats.add(roomForUser2);
     }
 
     public boolean createNewGroup(String creatorUsername, String groupName, List<String> initialMembers) {
         String groupId = "group_" + System.currentTimeMillis();
 
-        ChatRoom newGroup = new ChatRoom(groupId, groupName, "assets/group_avatar.png", true);
+        ChatRoom newGroup = new ChatRoom(groupId, groupName, true);
         newGroup.addMember(creatorUsername);
 
         if (initialMembers != null) {
@@ -500,7 +502,7 @@ public class LoginServer {
             List<ChatRoom> rooms = userChatsMap.computeIfAbsent(user.getUsername(), k -> new ArrayList<>());
             for (String contactJson : user.getContacts()) {
                 String roomId = generatePrivateRoomId(user.getUsername(), contactJson);
-                ChatRoom room = new ChatRoom(roomId, contactJson, "assets/default_avatar.png", false);
+                ChatRoom room = new ChatRoom(roomId, contactJson, false);
 
                 loadChatMessagesFromFile(room);
                 rooms.add(room);

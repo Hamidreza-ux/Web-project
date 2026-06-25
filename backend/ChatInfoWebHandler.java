@@ -1,11 +1,8 @@
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import java.io.IOException;
-import java.io.OutputStream;
+import com.sun.net.httpserver.*;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 
 public class ChatInfoWebHandler implements HttpHandler {
 
@@ -95,7 +92,8 @@ public class ChatInfoWebHandler implements HttpHandler {
         }
 
         else if ("POST".equalsIgnoreCase(method)) {
-            String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+            InputStream is = exchange.getRequestBody();
+            String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
             String action = parseJsonFieldWhithRegex(body, "action");
 
             boolean success = false;

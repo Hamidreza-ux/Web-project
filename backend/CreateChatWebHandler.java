@@ -1,15 +1,11 @@
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import java.io.IOException;
-import java.io.OutputStream;
+import com.sun.net.httpserver.*;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 
 public class CreateChatWebHandler implements HttpHandler {
-
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
@@ -44,7 +40,7 @@ public class CreateChatWebHandler implements HttpHandler {
                 String contactUsername = contactsList.get(i);
                 User contactUser = loginServer.getRegisteredMap().get(contactUsername);
 
-                String avatar = "assets/default_avatar.png";
+                String avatar = "https://api.dicebear.com/7.x/bottts/svg?seed=" + contactUsername;
                 String uniqueId = contactUsername;
 
                 if (contactUser != null) {

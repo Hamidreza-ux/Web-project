@@ -1,11 +1,7 @@
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.sun.net.httpserver.*;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 
 public class LoginWebHandler implements HttpHandler {
     @Override
@@ -27,11 +23,14 @@ public class LoginWebHandler implements HttpHandler {
                 String username = parseJsonFieldWhithRegex(body, "username");
                 String password = parseJsonFieldWhithRegex(body, "password"); // استخراج username , password,
 
-                if (username.isBlank() || password.isBlank()) {
-                    sendResponse(exchange, 400,
-                            "{\"status\":\"error\", \"message\":\"نام کاربری و رمز عبور نمی‌توانند خالی باشند.\"}");
-                    return;
-                }
+                /*
+                 * if (username.isBlank() || password.isBlank()) {
+                 * sendResponse(exchange, 400,
+                 * "{\"status\":\"error\", \"message\":\"نام کاربری و رمز عبور نمی‌توانند خالی باشند.\"}"
+                 * );
+                 * return;
+                 * }
+                 */
 
                 LoginServer loginServer = LoginServer.getInstance();
                 LoginResult result = loginServer.authenticate(username, password);
@@ -41,23 +40,23 @@ public class LoginWebHandler implements HttpHandler {
 
                 switch (result) {
                     case LoginResult.SUCCESS:
-                        statusCode = 200;   //ok
+                        statusCode = 200; // ok
                         jsonResponse = "{\"status\":\"success\", \"message\":\"ورود با موفقیت انجام شد!\"}";
                         break;
                     case LoginResult.USER_NOT_FOUND:
-                        statusCode = 404;   //not found
+                        statusCode = 404; // not found
                         jsonResponse = "{\"status\":\"error\", \"message\":\"کاربری با این نام کاربری یافت نشد.\"}";
                         break;
                     case LoginResult.WRONG_PASSWORD:
-                        statusCode = 401;   //unauthorized
+                        statusCode = 401; // unauthorized
                         jsonResponse = "{\"status\":\"error\", \"message\":\"رمز عبور اشتباه است.\"}";
                         break;
                     case LoginResult.ACCOUNT_LOCKED:
-                        statusCode = 403;    //forbidden
+                        statusCode = 403; // forbidden
                         jsonResponse = "{\"status\":\"error\", \"message\":\"حساب شما به دلیل ۵ بار ورود اشتباه موقتاً مسدود شده است.\"}";
                         break;
                     default:
-                        statusCode = 500;  //server error
+                        statusCode = 500; // server error
                         jsonResponse = "{\"status\":\"error\", \"message\":\"خطای داخلی سرور\"}";
                 }
 
@@ -72,7 +71,12 @@ public class LoginWebHandler implements HttpHandler {
 
     }
 
-    private void sendResponse(HttpExchange exchange, int statusCode, String jsonResponse) throws IOException {   //متدی برای ارسال پاسخ به فرانت
+    private void sendResponse(HttpExchange exchange, int statusCode, String jsonResponse) throws IOException { // متدی
+                                                                                                               // برای
+                                                                                                               // ارسال
+                                                                                                               // پاسخ
+                                                                                                               // به
+                                                                                                               // فرانت
         byte[] responseBytes = jsonResponse.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
         exchange.sendResponseHeaders(statusCode, responseBytes.length);
@@ -81,7 +85,7 @@ public class LoginWebHandler implements HttpHandler {
         os.close();
     }
 
-    private String parseJsonFieldWhithRegex(String json, String field) {    // متن جیسون رو استخراج میکند
+    private String parseJsonFieldWhithRegex(String json, String field) { // متن جیسون رو استخراج میکند
         try {
             String regex = String.format("\"%s\":\"([^\"]+)\"", field);
             Pattern pattern = Pattern.compile(regex);

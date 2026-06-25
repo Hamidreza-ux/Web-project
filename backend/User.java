@@ -10,6 +10,7 @@ public class User {
     private final List<Long> messageTimestamps;
     private boolean darkMode;
     private final List<String> contacts;
+    private String AvatarURL;
 
     public User(String username, String ID, String password) {
         this.username = username;
@@ -19,6 +20,7 @@ public class User {
         this.messageTimestamps = new ArrayList<>();
         this.darkMode = false;
         this.contacts = new ArrayList<>();
+        this.AvatarURL = "https://api.dicebear.com/7.x/bottts/svg?seed=" + username;
     }
 
     public boolean passwordIsRight(String newPassword) {
@@ -92,6 +94,14 @@ public class User {
 
     public List<String> getContacts() {
         return contacts;
+    }
+
+    public String getAvatarURL () {
+        return AvatarURL;
+    }
+
+    public void setAvatarURL(String AvatarURL) {
+        this.AvatarURL = "https://api.dicebear.com/7.x/bottts/svg?seed=" + AvatarURL;
     }
 
 }

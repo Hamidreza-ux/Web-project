@@ -6,8 +6,8 @@ public class AdminCLI implements Runnable {
     private boolean loggedIn = false;
 
     // نام کاربری و رمز عبور ثابت ادمین برای ورود به CLI
-    private static final String ADMIN_USER = "admin";
-    private static final String ADMIN_PASS = "admin123";
+    private static final String ADMIN_USER = "superAdmin";
+    private static final String ADMIN_PASS = "alham6831";
 
     @Override
     public void run() {

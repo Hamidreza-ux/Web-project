@@ -15,10 +15,9 @@ public class ChatRoom { // all features in the chat room
     private List<String> members;
     private List<ChatMessage> history;
 
-    public ChatRoom(String id, String name, String avatarUrl, boolean isGroup) {
+    public ChatRoom(String id, String name, boolean isGroup) {
         this.id = id;
         this.name = name;
-        this.avatarUrl = avatarUrl;
         this.unreadCount = 0;
         this.isPinned = false;
         this.isArchived = false;
@@ -28,6 +27,11 @@ public class ChatRoom { // all features in the chat room
             this.username = "";
         } else {
             this.username = id;
+        }
+        if (isGroup) {
+            this.avatarUrl = "https://api.dicebear.com/7.x/identicon/svg?seed=" + id;
+        } else {
+            this.avatarUrl = "https://api.dicebear.com/7.x/bottts/svg?seed=" + name;
         }
         this.isBlocked = false;
         this.members = new ArrayList<>();

@@ -1,7 +1,5 @@
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import java.io.IOException;
-import java.io.OutputStream;
+import com.sun.net.httpserver.*;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -22,6 +20,7 @@ public class MainPageWebHandler implements HttpHandler {
         //دریافت لیست چت ها
         if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
             try {
+                //تنظیم هدر های امنیتی
                 String username = exchange.getRequestHeaders().getFirst("X-Username");
                 String searchQuery = exchange.getRequestHeaders().getFirst("X-Search"); 
                 String isArchivePage = exchange.getRequestHeaders().getFirst("X-Get-Archive"); 

@@ -5,14 +5,14 @@ import java.util.regex.*;
 
 public class SignupWebHandler implements HttpHandler {
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) throws IOException {   //http کار دریافت درخواست و ارسال پاسخ رو در بک اند انجام میدهد
         // برای اتصال بدون دردسر به فرانت
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "POST, OPTIONS");
         exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
 
         if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) { // اجازه اولیه قبل پست
-            exchange.sendResponseHeaders(204, -1); // درخواست موفق بدون ارسال متن 204
+            exchange.sendResponseHeaders(204, -1); // درخواست موفق بدون ارسال متن 204 و اعلام وضعیت به مرورگر
             return;
         }
 
