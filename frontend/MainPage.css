@@ -1,7 +1,3 @@
-/* ==========================================
-   مَت - MainPage.css
-   ========================================== */
-
 * {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -39,18 +35,12 @@ body {
     direction: rtl;
 }
 
-/* ==========================================
-   چیدمان کلی
-   ========================================== */
 .app-container {
     display: flex;
     height: 100vh;
     flex-direction: row-reverse;
 }
 
-/* ==========================================
-   SIDEBAR
-   ========================================== */
 .sidebar {
     width: var(--sidebar-w);
     min-width: 280px;
@@ -63,7 +53,6 @@ body {
     flex-shrink: 0;
 }
 
-/* --- هدر سایدبار --- */
 .sidebar-header {
     display: flex;
     align-items: center;
@@ -87,7 +76,6 @@ body {
     gap: 4px;
 }
 
-/* آواتار کاربر در هدر */
 .user-avatar {
     width: 40px;
     height: 40px;
@@ -113,7 +101,6 @@ body {
     white-space: nowrap;
 }
 
-/* دکمه‌های هدر */
 .hdr-btn {
     width: 38px;
     height: 38px;
@@ -137,7 +124,6 @@ body {
     filter: brightness(0) invert(0.6);
 }
 
-/* --- منوی کشویی سه نقطه --- */
 .dropdown-menu {
     position: absolute;
     top: 60px;
@@ -180,9 +166,6 @@ body {
     flex-shrink: 0;
 }
 
-/* ==========================================
-   SEARCH OVERLAY
-   ========================================== */
 .search-overlay {
     position: absolute;
     inset: 0;
@@ -217,7 +200,6 @@ body {
     color: var(--text-sub);
     flex-shrink: 0;
     transition: background 0.2s;
-    /* فلش را برعکس می‌کنیم چون RTL است */
     transform: scaleX(-1);
 }
 
@@ -244,9 +226,6 @@ body {
     padding: 6px 0;
 }
 
-/* ==========================================
-   لیست چت‌ها
-   ========================================== */
 .chat-list {
     flex: 1;
     overflow-y: auto;
@@ -259,7 +238,6 @@ body {
     border-radius: 2px;
 }
 
-/* ردیف آرشیو */
 .archive-row {
     display: flex;
     align-items: center;
@@ -335,7 +313,6 @@ body {
     opacity: 0.6;
 }
 
-/* آواتار */
 .chat-avatar {
     width: 48px;
     height: 48px;
@@ -357,7 +334,6 @@ body {
     object-fit: cover;
 }
 
-/* آواتار Saved Messages */
 .saved-avatar {
     background: var(--saved-color);
 }
@@ -369,7 +345,6 @@ body {
     object-fit: contain;
 }
 
-/* اطلاعات چت */
 .chat-info {
     flex: 1;
     overflow: hidden;
@@ -425,7 +400,6 @@ body {
     margin-right: 4px;
 }
 
-/* دکمه FAB */
 .fab-btn {
     position: absolute;
     bottom: 24px;
@@ -454,9 +428,6 @@ body {
     filter: brightness(0) invert(1);
 }
 
-/* ==========================================
-   ناحیه چت اصلی
-   ========================================== */
 .chat-area {
     flex: 1;
     display: flex;
@@ -467,7 +438,6 @@ body {
     min-width: 0;
 }
 
-/* صفحه خوش‌آمدگویی */
 .welcome-screen {
     flex: 1;
     display: flex;
@@ -497,14 +467,12 @@ body {
     opacity: 0.6;
 }
 
-/* پنجره چت */
 .chat-window {
     display: flex;
     flex-direction: column;
     height: 100%;
 }
 
-/* هدر پنجره چت */
 .chat-window-header {
     display: flex;
     align-items: center;
@@ -555,7 +523,6 @@ body {
     margin-top: 2px;
 }
 
-/* نوار جستجو پیام‌ها */
 .msg-search-bar {
     display: flex;
     align-items: center;
@@ -595,7 +562,6 @@ body {
     padding: 4px;
 }
 
-/* ناحیه پیام‌ها */
 .messages-area {
     flex: 1;
     overflow-y: auto;
@@ -614,7 +580,6 @@ body {
     gap: 3px;
 }
 
-/* حباب پیام */
 .msg-bubble {
     display: flex;
     flex-direction: column;
@@ -623,11 +588,11 @@ body {
 }
 
 .msg-bubble.out {
-    align-self: flex-start; /* در RTL پیام خودم چپ = سمت چپ صفحه */
+    align-self: flex-start;
 }
 
 .msg-bubble.in {
-    align-self: flex-end; /* پیام دیگران راست */
+    align-self: flex-end;
 }
 
 .bubble-body {
@@ -674,7 +639,6 @@ body {
     margin-top: 2px;
 }
 
-/* ویرایش بار */
 .edit-bar {
     display: flex;
     align-items: center;
@@ -695,7 +659,6 @@ body {
     font-size: 13px;
 }
 
-/* ورودی پیام */
 .message-input-wrap {
     display: flex;
     align-items: flex-end;
@@ -772,9 +735,6 @@ body {
     transform: scale(1.05);
 }
 
-/* ==========================================
-   باکس قابلیت‌ها روی گپ
-   ========================================== */
 .chat-action-box {
     position: fixed;
     background: #233138;
@@ -817,9 +777,6 @@ body {
 .action-box-item.danger { color: var(--danger); }
 .action-box-item.danger svg { color: var(--danger); }
 
-/* ==========================================
-   منوی کانتکست پیام
-   ========================================== */
 .msg-context-menu {
     position: fixed;
     background: #233138;
@@ -851,9 +808,6 @@ body {
 .mcm-item:hover { background: rgba(255,255,255,0.06); }
 .mcm-item.danger { color: var(--danger); }
 
-/* ==========================================
-   مودال آرشیو
-   ========================================== */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -904,9 +858,6 @@ body {
     padding: 6px 0;
 }
 
-/* ==========================================
-   ریسپانسیو موبایل
-   ========================================== */
 @media (max-width: 700px) {
     .sidebar {
         width: 100%;
@@ -918,15 +869,12 @@ body {
     }
 }
 
-
 @import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.3/Vazirmatn-font-face.css');
 
 * {
     box-sizing: border-box;
 }
 
-
-/* یکپارچه‌سازی تمام متغیرها در دو حالت */
 :root, [data-theme="light"] {
     --bg-app: #ffffff;
     --bg-page: #f3f4f6;
@@ -975,29 +923,27 @@ body { background-color: var(--bg-page) !important; color: var(--text-main); mar
 
 body {
     font-family: 'Vazirmatn', sans-serif;
-    background-color: #f3f4f6; /* رنگ پس زمینه سایت */
+    background-color: #f3f4f6;
     margin: 0;
+    min-height:100vh;
     padding: 0;
     color: #1f2937;
     display: flex;
     justify-content: center;
 }
 
-/* ظرف اصلی برنامه (ابعاد موبایل) */
 .app-container {
-    width: 100%;
-    max-width: 450px;
-    background-color: #ffffff;
+    margin: 0;
+    max-width: none;
     min-height: 100vh;
+    width: 100%;
+    background-color: #ffffff;
     box-shadow: 0 0 20px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
     position: relative;
 }
 
-/* ======================================= */
-/* استایل‌های هدر صفحات */
-/* ======================================= */
 .header {
     display: flex;
     justify-content: space-between;
@@ -1018,7 +964,6 @@ body {
     margin: 0;
 }
 
-/* دکمه ها و لینک‌های بدون استایل پیش‌فرض */
 .back-link, .icon-btn {
     background: transparent;
     border: none;
@@ -1038,9 +983,6 @@ body {
     height: 24px;
 }
 
-/* ======================================= */
-/* صفحه تنظیمات اصلی (پروفایل و لیست) */
-/* ======================================= */
 .profile-section {
     display: flex;
     justify-content: center;
@@ -1124,9 +1066,6 @@ body {
     color: #6b7280;
 }
 
-/* ======================================= */
-/* استایل‌های فرم‌ها (ورودی‌ها و لیبل‌های شناور) */
-/* ======================================= */
 .form-container {
     padding: 20px 20px 0 20px;
     flex-grow: 1;
@@ -1148,7 +1087,7 @@ body {
     color: #1f2937;
     transition: all 0.2s;
 }
-/* افکت لیبل شناور */
+
 .form-label {
     position: absolute;
     right: 16px;
@@ -1161,7 +1100,7 @@ body {
     transition: 0.2s ease all;
     pointer-events: none;
 }
-/* وقتی روی فیلد کلیک می‌کنید یا مقداری در آن است */
+
 .form-input:focus {
     border-color: #10b981;
 }
@@ -1173,7 +1112,6 @@ body {
     color: #10b981;
 }
 
-/* باکس اطلاعات و نکات (زیر فیلدها) */
 .info-box {
     display: flex;
     gap: 12px;
@@ -1200,9 +1138,6 @@ body {
     margin-bottom: 4px;
 }
 
-/* ======================================= */
-/* صفحه حذف حساب */
-/* ======================================= */
 .delete-content {
     padding: 20px;
     flex-grow: 1;
@@ -1227,19 +1162,16 @@ body {
     font-size: 14px;
 }
 
-/* ======================================= */
-/* صفحه ویرایش عکس */
-/* ======================================= */
-.pic-container {
-    width: 100%;
-    height: 250px;
-    overflow: hidden;
-    margin-bottom: 20px;
+.pic-container{
+    width:180px;
+    height:180px;
+    margin:40px auto;
 }
-.cover-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.cover-img{
+    width:100%;
+    height:100%;
+    border-radius:50%;
+    object-fit:cover;
 }
 .upload-option {
     margin: 0 20px;
@@ -1263,14 +1195,11 @@ body {
     color: #6b7280;
 }
 
-/* ======================================= */
-/* دکمه‌های پایینی صفحات */
-/* ======================================= */
 .bottom-btn-container {
     padding: 20px;
     background: white;
     border-top: 1px solid #f3f4f6;
-    margin-top: auto; /* هول دادن به پایین صفحه */
+    margin-top: auto; 
 }
 .btn {
     width: 100%;
@@ -1306,9 +1235,6 @@ body {
     background-color: #b91c1c;
 }
 
-/* ======================================= */
-/* استایل‌های صفحه انتخاب تم              */
-/* ======================================= */
 .theme-page-content {
     padding: 24px 20px;
     flex-grow: 1;
