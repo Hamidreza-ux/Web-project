@@ -154,10 +154,14 @@ public class AdminCLI implements Runnable {
     private void createGroupManually() {
         System.out.print("\nnew group name: ");
         String groupName = scanner.nextLine();
+        System.out.print("\nusername: ");
+        String username = scanner.nextLine();
+        System.out.print("\nID: ");
+        String id = scanner.nextLine();
         if (groupName.isEmpty())
             return;
 
-        boolean ok = server.createNewGroup("admin", groupName, new ArrayList<>());
+        boolean ok = server.createNewGroup(id, username, groupName, new ArrayList<>());
         if (ok)
             System.out.println("the group create successfully.");
     }

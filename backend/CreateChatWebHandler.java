@@ -91,6 +91,7 @@ public class CreateChatWebHandler implements HttpHandler {
             }
 
             else if ("create_group".equals(action)) {
+                String id = parseJsonFieldWhithRegex(body, "id");
                 String groupName = parseJsonFieldWhithRegex(body, "groupName");
                 if (groupName == null || groupName.trim().isEmpty()) {
                     sendResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"نام گروه نباید خالی باشد.\"}");
@@ -106,7 +107,7 @@ public class CreateChatWebHandler implements HttpHandler {
                     }
                 }
 
-                boolean ok = loginServer.createNewGroup(username, groupName, memberList);
+                boolean ok = loginServer.createNewGroup(id, username, groupName, memberList);
                 if (ok) {
                     sendResponse(exchange, 201,
                             "{\"status\":\"success\",\"message\":\"گروه جدید با موفقیت ساخته شد.\"}");

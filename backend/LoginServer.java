@@ -390,11 +390,10 @@ public class LoginServer {
         user2Chats.add(roomForUser2);
     }
 
-    public boolean createNewGroup(String creatorUsername, String groupName, List<String> initialMembers) {
-        String groupId = "group_" + System.currentTimeMillis();
+    public boolean createNewGroup(String id, String username, String groupName, List<String> initialMembers) {
 
-        ChatRoom newGroup = new ChatRoom(groupId, groupName, true);
-        newGroup.addMember(creatorUsername);
+        ChatRoom newGroup = new ChatRoom(id, groupName, true);
+        newGroup.addMember(username);
 
         if (initialMembers != null) {
             for (String member : initialMembers) {
@@ -419,21 +418,21 @@ public class LoginServer {
     }
 
     public void printReportedMessages() {
-        System.out.println("\n--- لیست پیام‌های گزارش شده به ادمین ---");
+        System.out.println("\n--- list of reports ---");
         int count = 0;
         for (List<ChatRoom> chats : userChatsMap.values()) {
             for (ChatRoom room : chats) {
                 for (ChatMessage msg : room.getMessages()) {
                     if (msg.isReported()) {
                         count++;
-                        System.out.printf("[%d] چت: %s | فرستنده اسپم: %s | محتوای پیام: \"%s\"\n",
+                        System.out.printf("[%d] chat: %s | spam sender: %s | message content: \"%s\"\n",
                                 count, room.getName(), msg.getSender(), msg.getContent());
                     }
                 }
             }
         }
         if (count == 0) {
-            System.out.println("هیچ پیام گزارش شده‌ای وجود ندارد.");
+            System.out.println("find nothing!");
         }
         System.out.println("---------------------------------------");
     }

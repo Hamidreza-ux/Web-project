@@ -89,7 +89,6 @@ function initEvents() {
     // منوی چت (سه نقطه روی هدر چت)
     document.getElementById('cwhMenuBtn').addEventListener('click', (e) => {
         e.stopPropagation();
-        // TODO: منوی اطلاعات چت را باز کن
         window.location.href = `ChatInfo.html?chatId=${state.activeChatId}&username=${state.username}`;
     });
 
@@ -125,36 +124,29 @@ function initEvents() {
 
     // بستن منوها با کلیک خارج
     document.addEventListener('click', (e) => {
-        // بستن dropdown
         if (!e.target.closest('#menuBtn') && !e.target.closest('#dropdownMenu')) {
             document.getElementById('dropdownMenu').classList.remove('open');
         }
-        // بستن باکس قابلیت
         if (!e.target.closest('#chatActionBox') && !e.target.closest('.chat-item')) {
             hideChatActionBox();
         }
-        // بستن منوی پیام
         if (!e.target.closest('#msgContextMenu')) {
             hideMsgContextMenu();
         }
     });
 }
-
-// ==========================================
 // بارگذاری لیست چت‌ها
-// ==========================================
 async function loadChatList(searchQuery = '') {
     let chats;
-
-        try {
-            const headers = { 'X-Username': state.username };
-            if (searchQuery) headers['X-Search'] = searchQuery;
-            const res = await fetch(`${API}/chats`, { headers });
-            if (!res.ok) return;
-            chats = await res.json();
-        } catch (err) {
-            console.error('loadChatList:', err);
-            return;
+    try {
+        const headers = { 'X-Username': state.username };
+        if (searchQuery) headers['X-Search'] = searchQuery;
+        const res = await fetch(`${API}/chats`, { headers });
+        if (!res.ok) return;
+        chats = await res.json();
+    } catch (err) {
+        console.error('loadChatList:', err);
+        return;
     }
 
     state.chatsData = chats;
@@ -162,14 +154,11 @@ async function loadChatList(searchQuery = '') {
     updateArchiveRow();
 }
 
-// ==========================================
 // رندر لیست چت‌ها
-// ==========================================
 function renderChatList(chats) {
     const container = document.getElementById('dynamicChatList');
     container.innerHTML = '';
 
-    // اول پین‌شده‌ها، بعد بقیه
     const sorted = [...chats].sort((a, b) => {
         if (a.isPinned && !b.isPinned) return -1;
         if (!a.isPinned && b.isPinned) return 1;
@@ -188,14 +177,11 @@ function buildChatItem(chat) {
         (chat.id === state.activeChatId ? ' active' : '');
     div.dataset.chatId = chat.id;
 
-    // آواتار
     const av = document.createElement('div');
     av.className = 'chat-avatar';
     av.textContent = chat.name.charAt(0).toUpperCase();
-    // رنگ تصادفی ثابت بر اساس نام
     av.style.background = stringToColor(chat.name);
 
-    // اطلاعات
     const info = document.createElement('div');
     info.className = 'chat-info';
 
@@ -228,10 +214,8 @@ function buildChatItem(chat) {
     div.appendChild(av);
     div.appendChild(info);
 
-    // کلیک → باز کردن چت
     div.addEventListener('click', () => openChat(chat.id, chat.name, chat.isGroup));
 
-    // نگه داشتن → باز کردن باکس قابلیت‌ها
     let holdTimer;
     div.addEventListener('mousedown', (e) => {
         holdTimer = setTimeout(() => {
@@ -241,7 +225,6 @@ function buildChatItem(chat) {
     div.addEventListener('mouseup', () => clearTimeout(holdTimer));
     div.addEventListener('mouseleave', () => clearTimeout(holdTimer));
 
-    // راست‌کلیک هم باکس را باز می‌کند
     div.addEventListener('contextmenu', (e) => {
         e.preventDefault();
         showChatActionBox(e, chat);
@@ -249,21 +232,16 @@ function buildChatItem(chat) {
 
     return div;
 }
-
-// ==========================================
 // آپدیت ردیف آرشیو
-// ==========================================
 async function updateArchiveRow() {
     let archivedChats;
-
-        try {
-            const res = await fetch(`${API}/chats`, {
-                headers: { 'X-Username': state.username, 'X-Get-Archive': 'true' }
-            });
-            if (!res.ok) return;
-            archivedChats = await res.json();
-        } catch { return; }
-    
+    try {
+        const res = await fetch(`${API}/chats`, {
+            headers: { 'X-Username': state.username, 'X-Get-Archive': 'true' }
+        });
+        if (!res.ok) return;
+        archivedChats = await res.json();
+    } catch { return; }
 
     const row = document.getElementById('archiveRow');
     if (archivedChats.length > 0) {
@@ -280,29 +258,23 @@ async function openChat(chatId, chatName, isGroup) {
     state.activeIsGroup = isGroup;
     state.editingMsgId = null;
 
-    // active class
     document.querySelectorAll('.chat-item').forEach(el => {
         el.classList.toggle('active', el.dataset.chatId === chatId);
     });
 
-    // نمایش پنجره چت
     document.getElementById('welcomeScreen').style.display = 'none';
     document.getElementById('chatWindow').style.display = 'flex';
 
-    // هدر پنجره چت
     document.getElementById('cwhName').textContent = chatName;
     document.getElementById('cwhAvatar').textContent = chatName.charAt(0).toUpperCase();
     document.getElementById('cwhAvatar').style.background = stringToColor(chatName);
     document.getElementById('cwhStatus').textContent = isGroup ? 'گروه' : '';
 
-    // بارگذاری پیام‌ها
     await loadMessages();
 
-    // polling
     if (state.pollInterval) clearInterval(state.pollInterval);
     state.pollInterval = setInterval(loadMessages, 3000);
 
-    // بستن search overlay در موبایل
     closeSearchOverlay();
 }
 
@@ -319,19 +291,15 @@ async function loadMessages(searchQuery = '') {
         const res = await fetch(`${API}/message`, { headers });
         if (!res.ok) return;
         messages = await res.json();
-        } catch (err) {
+    } catch (err) {
         console.error('loadMessages:', err);
         return;
     }
-    
 
     state.messagesData = messages;
     renderMessages(messages);
 }
-
-// ==========================================
 // رندر پیام‌ها
-// ==========================================
 function renderMessages(messages) {
     const list = document.getElementById('messagesList');
     const area = document.getElementById('messagesArea');
@@ -349,7 +317,6 @@ function renderMessages(messages) {
         const body = document.createElement('div');
         body.className = 'bubble-body';
 
-        // نام فرستنده در گروه
         if (state.activeIsGroup && !isOut) {
             const snd = document.createElement('div');
             snd.className = 'bubble-sender';
@@ -358,7 +325,13 @@ function renderMessages(messages) {
         }
 
         const text = document.createElement('div');
-        text.textContent = msg.isFile ? `📎 ${msg.content}` : msg.content;
+        
+        if (msg.isFile && !msg.content.startsWith('📎 ')) {
+            text.textContent = `📎 ${msg.content}`;
+        } else {
+            text.textContent = msg.content;
+        }
+        
         body.appendChild(text);
 
         const footer = document.createElement('div');
@@ -373,7 +346,6 @@ function renderMessages(messages) {
         body.appendChild(footer);
         wrap.appendChild(body);
 
-        // راست‌کلیک روی پیام
         wrap.addEventListener('contextmenu', (e) => {
             e.preventDefault();
             showMsgContextMenu(e, msg.id, msg.sender, isOut);
@@ -385,9 +357,7 @@ function renderMessages(messages) {
     if (atBottom) area.scrollTop = area.scrollHeight;
 }
 
-// ==========================================
 // ارسال پیام
-// ==========================================
 let lastSendTime = 0;
 
 async function sendMessage() {
@@ -426,7 +396,7 @@ async function sendMessage() {
             updateCharCount(0);
             await loadMessages();
         } else if (res.status === 429) {
-            alert('🚫 اسپم ممنوع! کمی صبر کنید.');
+            alert('اسپم ممنوع! کمی صبر کنید.');
         } else {
             const d = await res.json();
             alert(d.message || 'خطا در ارسال');
@@ -436,9 +406,7 @@ async function sendMessage() {
     }
 }
 
-// ==========================================
 // ارسال فایل
-// ==========================================
 async function handleFileAttach(e) {
     const file = e.target.files[0];
     if (!file || !state.activeChatId) return;
@@ -458,16 +426,13 @@ async function handleFileAttach(e) {
     e.target.value = '';
 }
 
-// ==========================================
 // باکس قابلیت‌ها روی گپ
-// ==========================================
 function showChatActionBox(event, chat) {
     event.stopPropagation();
     state.actionTargetChat = chat;
 
     const box = document.getElementById('chatActionBox');
 
-    // پین / آن‌پین
     const pinBtn = document.getElementById('actionPin');
     const pinIcon = document.getElementById('actionPinIcon');
     const pinLabel = document.getElementById('actionPinLabel');
@@ -479,11 +444,9 @@ function showChatActionBox(event, chat) {
         pinLabel.textContent = 'سنجاق کردن';
     }
 
-    // آرشیو
     document.getElementById('actionArchiveLabel').textContent =
         chat.isArchived ? 'خارج از آرشیو' : 'آرشیو';
 
-    // بلاک — فقط چت شخصی
     const blockBtn = document.getElementById('actionBlock');
     if (!chat.isGroup) {
         blockBtn.style.display = 'flex';
@@ -493,7 +456,6 @@ function showChatActionBox(event, chat) {
         blockBtn.style.display = 'none';
     }
 
-    // موقعیت باکس کنار آیتم چت
     box.style.display = 'block';
     const x = event.clientX;
     const y = event.clientY;
@@ -512,7 +474,6 @@ async function doTogglePin() {
     hideChatActionBox();
     const chat = state.actionTargetChat;
     if (!chat) return;
-
 }
 
 async function doToggleArchive() {
@@ -550,18 +511,14 @@ async function doDeleteChat() {
     const chat = state.actionTargetChat;
     if (!chat) return;
     if (!confirm(`آیا مطمئنید که می‌خواهید گفتگوی "${chat.name}" را حذف کنید؟`)) return;
-
 }
 
-
 // منوی کانتکست پیام
-
 function showMsgContextMenu(event, msgId, sender, isOut) {
     state.contextMsgId = msgId;
     state.contextMsgSender = sender;
 
     const menu = document.getElementById('msgContextMenu');
-    // ویرایش و حذف فقط برای پیام‌های خودم
     document.getElementById('mcmEdit').style.display = isOut ? 'flex' : 'none';
     document.getElementById('mcmDelete').style.display = isOut ? 'flex' : 'none';
 
@@ -640,7 +597,6 @@ function openSearchOverlay() {
     document.getElementById('searchOverlay').classList.add('open');
     document.getElementById('searchInput').focus();
     document.getElementById('searchResults').innerHTML = '';
-    // نمایش همه چت‌ها به عنوان نتیجه اولیه اگر چیز جستجو نشده باشد
     doSearchChats('');
 }
 
@@ -664,10 +620,6 @@ function doSearchChats(query) {
         const item = buildChatItem(chat);
         results.appendChild(item);
     });
-
-    if (!query) {
-        // جستجو در پیام‌ها هم
-    }
 }
 
 function toggleMsgSearch() {
@@ -684,9 +636,6 @@ function clearMsgSearch() {
     loadMessages();
 }
 
-// ==========================================
-// آرشیو مودال
-// ==========================================
 function openArchiveModal() {
     document.getElementById('archiveModal').style.display = 'flex';
     renderArchiveList();
@@ -732,24 +681,17 @@ function renderArchiveList() {
     });
 }
 
-// ==========================================
-// کمکی‌ها
-// ==========================================
-
-// تغییر اندازه خودکار textarea
 function autoResize(el) {
     el.style.height = 'auto';
     el.style.height = Math.min(el.scrollHeight, 120) + 'px';
 }
 
-// شمارنده کاراکتر
 function updateCharCount(len) {
     const el = document.getElementById('charCount');
     el.textContent = `${len}/1000`;
     el.className = 'char-count' + (len > 900 ? ' over' : len > 700 ? ' warn' : '');
 }
 
-// رنگ ثابت بر اساس نام (برای آواتار)
 function stringToColor(str) {
     const colors = ['#2196f3','#e91e63','#9c27b0','#00bcd4','#ff5722','#607d8b','#4caf50','#ff9800'];
     let hash = 0;

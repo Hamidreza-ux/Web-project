@@ -3,8 +3,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const createGroupForm = document.getElementById('create-group-form');
     const contactsList = document.getElementById('contacts-list');
 
-    // فرض می‌کنیم نام کاربری فرد لاگین‌شده را از هدر یا localStorage گرفته‌اید
-    const currentUsername = "my_username"; 
+    const currentUsername = localStorage.getItem('username'); 
+    
+    if (!currentUsername) {
+        window.location.href = 'index.html';
+        return;
+    }
+
     const API_URL = "http://localhost:8085/create-chat"; 
     
     // تنظیم هدرهای ثابت برای تمام درخواست‌ها
@@ -13,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'Content-Type': 'application/json; charset=utf-8'
     };
 
-    //  دریافت لیست مخاطبین از سرور
+    // دریافت لیست مخاطبین از سرور
     async function loadContacts() {
         try {
             const response = await fetch(API_URL, { method: 'GET', headers: headers });
@@ -25,12 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
             contacts.forEach(contact => {
                 const li = document.createElement('li');
                 li.classList.add('contact-item');
-                li.setAttribute('data-id', contact.uniqueId); // استفاده از آیدی منحصربه‌فرد برای هدایت به چت
+                li.setAttribute('data-id', contact.uniqueId); 
                 li.setAttribute('data-username', contact.username);
 
                 li.innerHTML = `
                     <div style="display:flex; align-items:center; gap:10px;">
-                        <img src="${contact.avatarUrl}" alt="avatar" style="width:35px; height:35px; border-radius:50%;">
+                        <img src="${contact.avatarUrl || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + contact.username}" alt="avatar" style="width:35px; height:35px; border-radius:50%;">
                         <span class="contact-name">${contact.username}</span>
                     </div>
                     <span class="contact-id">@${contact.uniqueId}</span>
@@ -42,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    //  ارسال اطلاعات برای افزودن مخاطب جدید 
+    // ارسال اطلاعات برای افزودن مخاطب جدید 
     addContactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const contactIdInput = document.getElementById('contact-id');
@@ -64,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const result = await response.json();
-            alert(result.message);
+            alert(result.message || 'عملیات با موفقیت انجام شد');
 
             if (response.ok) {
                 contactIdInput.value = '';
@@ -75,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    //                   ساخت گروه
+    // ساخت گروه
     createGroupForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const groupNameInput = document.getElementById('group-name');
@@ -83,15 +88,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!groupName) return;
 
+        const groupRequestBody = {
+            action: "create_group",
+            targetId: groupName,
+            members: "" 
+        };
+
         try {
             const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: headers,
-                body: JSON.stringify(requestBody)
+                body: JSON.stringify(groupRequestBody)
             });
 
             const result = await response.json();
-            alert(result.message);
+            alert(result.message || 'گروه ساخته شد');
 
             if (response.status === 201 || response.ok) {
                 groupNameInput.value = '';
@@ -101,14 +112,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ۴. مدیریت کلیک روی هر مخاطب برای ورود به صفحه چت
+    // مدیریت کلیک روی هر مخاطب برای ورود به صفحه چت
     contactsList.addEventListener('click', (e) => {
         const clickedContact = e.target.closest('.contact-item');
         if (clickedContact) {
             const uniqueId = clickedContact.getAttribute('data-id');
-            alert(`ورود به صفحه چت اختصاصی کاربر با آیدی: ${uniqueId}`);
-            // هدایت به صفحه چت اختصاصی پروژه:
-            // window.location.href = `chat.html?id=${uniqueId}`;
+            const targetUsername = clickedContact.getAttribute('data-username');
+            
+            alert(`ورود به صفحه چت اختصاصی کاربر با نام: ${targetUsername}`);
+            
+            // هدایت به صفحه چت اصلی (با فرستادن اطلاعات مورد نیاز در URL)
+            window.location.href = `chat.html?chatId=${uniqueId}&name=${targetUsername}`;
         }
     });
 
