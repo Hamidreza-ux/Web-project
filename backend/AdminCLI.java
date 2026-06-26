@@ -28,8 +28,8 @@ public class AdminCLI implements Runnable {
             }
         }
 
+        printMenu();
         while (loggedIn) {
-            printMenu();
             System.out.print("Choose one option: ");
             String choice = scanner.nextLine();
 

@@ -1,6 +1,3 @@
-//       MM      MM       AA   TTTTTT
-//      MM MM  MM  MM    AAAA    TT
-//     MM    MM     MM  AA  AA   TT
 const API = 'http://localhost:8085/api';
 
 const state = {

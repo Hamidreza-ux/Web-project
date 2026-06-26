@@ -6,14 +6,14 @@ import java.nio.charset.StandardCharsets;
 public class LoginServer {
     private String username;
     private String password;
-    private static volatile LoginServer instance;   //valotile باعث سرعت در دیدن دیتای جدید می شود(multy threading)
+    private static volatile LoginServer instance; // valotile باعث سرعت در دیدن دیتای جدید می شود(multy threading)
 
     private final Map<String, User> registeredMap = new HashMap<>(); // چون هنوز به دیتابیس وصل نشدیم اطلاعات کاربر رو
                                                                      // به صورت
                                                                      // موقت در اینجا ذخیره میکنیم
     private final Map<String, List<ChatRoom>> userChatsMap = new ConcurrentHashMap<>(); // لیست صفحه چت ها و نام کاربری
                                                                                         // کاربر
-    private static final String DB_DIR = "database/";
+    private static final String DB_DIR = "database/"; // برای پایگاه داده متنی این کار رو کردم
     private static final String USERS_FILE = DB_DIR + "users.txt";
     private static final String CHATS_DIR = DB_DIR + "chats/";
 
@@ -126,7 +126,7 @@ public class LoginServer {
             filteredChats.add(chat);
         }
 
-        //مرتب سازی بر اساس...
+        // مرتب سازی بر اساس...
         filteredChats.sort((chat1, chat2) -> {
             // pin
             if (chat1.isPinned() && !chat2.isPinned())
@@ -444,19 +444,24 @@ public class LoginServer {
                 new OutputStreamWriter(new FileOutputStream(USERS_FILE), StandardCharsets.UTF_8))) {
             for (User u : registeredMap.values()) {
                 String contactsStr = String.join(",", u.getContacts());
+                // رمزنگاری
+                String encryptedPassword = CryptoHelper.encrypt(u.getPassword());
+
                 writer.printf("%s|%s|%s|%b|%s\n",
-                        u.getUsername(), u.getPassword(), u.getID(), u.isDarkMode(), contactsStr);
+                        u.getUsername(), encryptedPassword, u.getID(), u.isDarkMode(), contactsStr);
             }
         } catch (IOException e) {
             System.err.println("خطا در ذخیره فایل کاربران: " + e.getMessage());
         }
     }
 
+    // ذخیره چت ها در فایل
     public synchronized void saveChatHistoryToFile(String roomId, List<ChatMessage> messages) {
         File chatFile = new File(CHATS_DIR + roomId + ".txt");
         try (PrintWriter writer = new PrintWriter(
                 new OutputStreamWriter(new FileOutputStream(chatFile), StandardCharsets.UTF_8))) {
             for (ChatMessage msg : messages) {
+                // رمرنگاری
                 String encryptedContent = CryptoHelper.encrypt(msg.getContent());
                 writer.printf("%s|%b|%s\n", msg.getSender(), msg.isReported(), encryptedContent);
             }
@@ -465,6 +470,7 @@ public class LoginServer {
         }
     }
 
+    // لوذ کردن کاربران
     private void loadDataFromFiles() {
         File uFile = new File(USERS_FILE);
         if (!uFile.exists())
@@ -479,12 +485,14 @@ public class LoginServer {
                     continue;
 
                 String username = parts[0];
-                String password = parts[1];
+                String encryptedPassword = parts[1];
                 String userId = parts[2];
                 boolean isDarkMode = Boolean.parseBoolean(parts[3]);
 
-                User user = new User(username, userId, password);
-                user.setID(userId);
+                // رمزگشایی
+                String plainPassword = CryptoHelper.decrypt(encryptedPassword);
+
+                User user = new User(username, userId, plainPassword);
                 user.setDarkMode(isDarkMode);
 
                 if (parts.length == 5 && !parts[4].isEmpty()) {
@@ -526,6 +534,7 @@ public class LoginServer {
                 String sender = parts[0];
                 boolean isReported = Boolean.parseBoolean(parts[1]);
                 String encryptedContent = parts[2];
+                // رمزگشایی
                 String plainText = CryptoHelper.decrypt(encryptedContent);
 
                 ChatMessage msg = new ChatMessage(sender, plainText, false);
@@ -540,18 +549,6 @@ public class LoginServer {
 
     private String generatePrivateRoomId(String user1, String user2) {
         return user1.compareTo(user2) < 0 ? user1 + "_" + user2 : user2 + "_" + user1;
-    }
-
-    public void addMessageToRoom(String roomId, ChatMessage message) {
-        for (List<ChatRoom> chats : userChatsMap.values()) {
-            for (ChatRoom room : chats) {
-                if (room.getId().equals(roomId)) {
-                    room.getMessages().add(message);
-                    saveChatHistoryToFile(roomId, room.getMessages());
-                    return;
-                }
-            }
-        }
     }
 
     public String getUsername() {

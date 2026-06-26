@@ -16,7 +16,7 @@ public class SignupWebHandler implements HttpHandler {
             return;
         }
 
-        if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+        if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {   //تجزیه و تحلیل دیتای ارسال شده از فرانت
             try {
                 InputStream is = exchange.getRequestBody();
 
