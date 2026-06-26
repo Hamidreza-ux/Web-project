@@ -3,14 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const createGroupForm = document.getElementById('create-group-form');
     const contactsList = document.getElementById('contacts-list');
 
-    const currentUsername = localStorage.getItem('username'); 
-    
-    if (!currentUsername) {
-        window.location.href = 'index.html';
-        return;
-    }
-
-    const API_URL = "http://localhost:8085/create-chat"; 
+    // فرض می‌کنیم نام کاربری فرد لاگین‌شده را از هدر یا localStorage گرفته‌اید
+    const currentUsername = "my_username"; 
+    const API_URL = "http://localhost:8085/api/create-chat"; 
     
     // تنظیم هدرهای ثابت برای تمام درخواست‌ها
     const headers = {
@@ -26,6 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const contacts = await response.json(); // دریافت آرایه مخاطبین
             contactsList.innerHTML = ''; // پاک کردن لیست قدیمی
+
+            if (!Array.isArray(contacts) || contacts.length === 0) {
+                contactsList.innerHTML = '<li style="color: #999; padding: 20px;">هیچ مخاطبی وجود ندارد</li>';
+                return;
+            }
 
             contacts.forEach(contact => {
                 const li = document.createElement('li');
@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } catch (error) {
             console.error('خطای شبکه:', error);
+            contactsList.innerHTML = `<li style="color: red; padding: 20px;">⚠️ خطا: ${error.message}</li>`;
         }
     }
 
@@ -53,12 +54,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const contactIdInput = document.getElementById('contact-id');
         const targetId = contactIdInput.value.trim();
 
-        if (!targetId) return;
+        if (!targetId) {
+            alert('لطفاً آیدی کاربر را وارد کنید');
+            return;
+        }
 
+        //  داده‌های صحیح برای افزودن مخاطب
         const requestBody = {
             action: "add_contact",
-            targetId: targetId,
-            members: ""
+            targetId: targetId
         };
 
         try {
@@ -73,14 +77,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 contactIdInput.value = '';
-                loadContacts();
+                loadContacts(); // بارگذاری مجدد لیست
             }
         } catch (error) {
-            alert('ارتباط با سرور برقرار نشد.');
+            console.error('خطا:', error);
+            alert('ارتباط با سرور برقرار نشد: ' + error.message);
         }
     });
 
-    // ساخت گروه
+    //  ساخت گروه
     createGroupForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const groupNameInput = document.getElementById('group-name');
@@ -108,21 +113,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 groupNameInput.value = '';
             }
         } catch (error) {
-            alert('ارتباط با سرور برقرار نشد.');
+            console.error('خطا:', error);
+            alert('ارتباط با سرور برقرار نشد: ' + error.message);
         }
     });
 
-    // مدیریت کلیک روی هر مخاطب برای ورود به صفحه چت
+    //  مدیریت کلیک روی هر مخاطب برای ورود به صفحه چت
     contactsList.addEventListener('click', (e) => {
         const clickedContact = e.target.closest('.contact-item');
         if (clickedContact) {
             const uniqueId = clickedContact.getAttribute('data-id');
-            const targetUsername = clickedContact.getAttribute('data-username');
+            const username = clickedContact.getAttribute('data-username');
             
-            alert(`ورود به صفحه چت اختصاصی کاربر با نام: ${targetUsername}`);
+            //  ذخیره اطلاعات چت برای استفاده در صفحه چت
+            localStorage.setItem('selectedContact', JSON.stringify({
+                uniqueId: uniqueId,
+                username: username
+            }));
             
-            // هدایت به صفحه چت اصلی (با فرستادن اطلاعات مورد نیاز در URL)
-            window.location.href = `chat.html?chatId=${uniqueId}&name=${targetUsername}`;
+            window.location.href = 'MainPage.html';
         }
     });
 
