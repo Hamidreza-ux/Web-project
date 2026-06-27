@@ -1173,6 +1173,9 @@ body {
     border-radius:50%;
     object-fit:cover;
 }
+.delete-option:hover {
+    background-color: #fca5a5;
+}
 .upload-option {
     margin: 0 20px;
     padding: 16px;
@@ -1187,12 +1190,15 @@ body {
     transition: 0.2s;
 }
 .upload-option:hover {
-    background-color: #f9fafb;
+    background-color: #7fcbcb;
 }
 .upload-icon {
     width: 24px;
     height: 24px;
     color: #6b7280;
+}
+.upload-option + .upload-option {
+    margin-top: 12px;
 }
 
 .bottom-btn-container {
@@ -1241,7 +1247,7 @@ body {
 }
 .theme-page-desc {
     font-size: 14px;
-    color: var(--color-text-secondary);
+    color: #1f2937;
     margin-bottom: 28px;
     text-align: center;
 }

@@ -3,82 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatInfo</title>
+    <title>ChatPage</title>
     <link rel="stylesheet" href="ChatPage.css">
     <script src="Chatpage.js" defer></script>
 </head>
 <body>
 
-<div class="ci-container">
-
-    <div class="ci-header">
-        <button class="ci-back-btn" onclick="history.back()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" width="22" height="22">
-                <path d="M15 18l-6-6 6-6"/>
-            </svg>
-        </button>
-        <span class="ci-header-title">اطلاعات</span>
+<div class="chat-container">
+    <div class="search-bar-container">
+        <button class="back-btn" onclick="goBack()">&#10142;</button>
+        <input type="text" id="search-input" placeholder="جستجو بین پیام‌ها..." oninput="loadMessages()">
     </div>
 
-    <div class="ci-profile">
-        <div class="ci-avatar" id="ciAvatar"></div>
-        <div class="ci-name" id="ciName">در حال بارگذاری...</div>
-        <div class="ci-sub" id="ciSub"></div>
-    </div>
-
-    <div class="ci-quick-actions" id="ciQuickActions"></div>
-
-    <div class="ci-section" id="commonGroupsSection" style="display:none">
-        <div class="ci-section-title">گروه‌های مشترک</div>
-        <div id="commonGroupsList"></div>
-    </div>
-
-    <div class="ci-section" id="membersSection" style="display:none">
-        <div class="ci-section-title" id="memberCountTitle">اعضا</div>
-        <div id="membersList"></div>
-    </div>
-
-    <div class="ci-section" id="editGroupSection" style="display:none">
-        <div class="ci-section-title">ویرایش گروه</div>
-        <div class="ci-edit-group">
-            <input type="text" id="newGroupName" placeholder="نام جدید گروه" class="ci-input">
-            <button class="ci-btn ci-btn-primary" id="saveGroupBtn">ذخیره</button>
+    <div class="chat-header">
+        <div class="user-info" onclick="openInfoModal()">
+            <img class="avatar" id="chat-avatar" src="" alt="Avatar">
+            <div class="header-text">
+                <span class="username" id="chat-name">بارگذاری...</span>
+                <span class="status-info" id="chat-status"></span>
+            </div>
+        </div>
+        
+        <div class="dropdown">
+            <button onclick="toggleMenu(event)" class="menu-btn">&#8942;</button>
+            <div id="chat-options-menu" class="dropdown-content"></div>
         </div>
     </div>
 
-    <div class="ci-section" id="historySection" style="display:none">
-        <div class="ci-section-title">تاریخچه پیام‌ها</div>
+    <div class="chat-box" id="chat-box"></div>
 
-        <div class="ci-history-tabs">
-            <button class="ci-tab active" id="tabDeleted"
-                    onclick="switchTab('deleted')">حذف شده</button>
-            <button class="ci-tab" id="tabEdited"
-                    onclick="switchTab('edited')">ویرایش شده</button>
-        </div>
-
-        <div id="deletedMsgList"></div>
-        <div id="editedMsgList" style="display:none"></div>
-    </div>
-
-    <div class="ci-divider"></div>
-
-    <div class="ci-danger-actions" id="ciDangerActions"></div>
-
-</div>
-
-<div class="ci-modal-overlay" id="addMemberModal" style="display:none">
-    <div class="ci-modal">
-        <div class="ci-modal-header">
-            <span>افزودن عضو</span>
-            <button onclick="closeAddMemberModal()">✕</button>
-        </div>
-        <input type="text" id="newMemberInput"
-               placeholder="نام کاربری عضو جدید" class="ci-input">
-        <button class="ci-btn ci-btn-primary" id="confirmAddMember">افزودن</button>
+    <div class="chat-footer">
+        <label class="file-label">
+            <input type="checkbox" id="file-checkbox"> 📁 فایل
+        </label>
+        <input type="text" id="msg-input" placeholder="پیام خود را بنویسید...">
+        <button onclick="sendMessage()">ارسال</button>
     </div>
 </div>
 
+<div id="info-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeInfoModal()">&times;</span>
+        <h3 id="modal-title">اطلاعات</h3>
+        <div id="modal-details"></div>
+        <div id="modal-history-section" style="display:none;">
+            <h4>تاریخچه گفتگو (پیام‌های حذف شده و نسخه‌های قبل ویرایش)</h4>
+            <div id="history-lists"></div>
+        </div>
+    </div>
+</div>
 
+<script src="app.js"></script>
 </body>
 </html>

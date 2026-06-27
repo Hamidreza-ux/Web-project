@@ -11,9 +11,10 @@
 
 <div class="app-container">
 
-    <aside class="sidebar" id="sidebar">
+    <!-- ============ سایدبار چپ ============ -->
+    <aside class="sidebar">
 
-        <div class="sidebar-header">
+        <div class="sidebar-header" id="sidebar-header">
             <div class="header-right">
                 <!-- عکس پروفایل کاربر -->
                 <div class="user-avatar" id="userAvatar"></div>
@@ -119,9 +120,6 @@
             <p>یک گفتگو را از سمت راست انتخاب کنید</p>
         </div>
 
-        <!-- پنجره چت (مخفی تا یک چت انتخاب نشود) -->
-        <div class="chat-window" id="chatWindow" style="display:none">
-
             <!-- هدر چت -->
             <div class="chat-window-header">
                 <div class="cwh-right">
@@ -153,19 +151,19 @@
                 <div class="messages-list" id="messagesList"></div>
             </div>
 
-            <!-- ویرایش بار -->
+        <!-- ورودی پیام -->
+        <div class="message-input-area" id="messageInputArea" style="display:none">
+            <!-- نوار ویرایش پیام -->
             <div class="edit-bar" id="editBar" style="display:none">
-                <span>✏️ در حال ویرایش پیام</span>
-                <button id="cancelEditBtn">لغو</button>
+                <span>در حال ویرایش پیام...</span>
+                <button onclick="cancelEdit()">لغو</button>
             </div>
 
-            <!-- ورودی پیام -->
-            <div class="message-input-wrap">
-                <button class="attach-btn" id="attachBtn" title="ارسال فایل">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
-                         fill="none" stroke="currentColor" stroke-width="2"
-                         stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+            <div class="input-row">
+                <!-- ارسال فایل -->
+                <button class="icon-btn attach-btn" title="ارسال فایل" onclick="document.getElementById('fileInput').click()">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
                     </svg>
                 </button>
                 <input type="file" id="fileInput" style="display:none">

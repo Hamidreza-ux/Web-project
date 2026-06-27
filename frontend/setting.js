@@ -155,3 +155,14 @@ function saveTheme() {
         window.location.href = 'Setting.html';
     }
 }
+function deleteImage() {
+    // حذف عکس از localStorage
+    localStorage.removeItem('userAvatar');
+
+    // همان منطق mainpage.js برای نمایش آواتار پیش‌فرض
+    const currentLoggedInUser = localStorage.getItem('userUsername') || localStorage.getItem('userName') || 'default';
+    const defaultAvatar = 'https://api.dicebear.com/7.x/bottts/svg?seed=' + currentLoggedInUser;
+
+    // نمایش آواتار پیش‌فرض در صفحه ویرایش پروفایل
+    document.getElementById('editProfilePic').src = defaultAvatar;
+}

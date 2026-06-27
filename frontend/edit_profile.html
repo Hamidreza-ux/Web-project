@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edite profile</title>
+    <title>Edite-profile</title>
     <link rel="stylesheet" href="MainPage.css">
     <script src="setting.js" defer></script>
 </head>
@@ -22,10 +22,14 @@
             </div>
             
             <div class="upload-option" onclick="document.getElementById('fileInput').click()">
-                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <img src="assets/image.svg" class="upload-icon" alt="upload icon">
                 <span>افزودن عکس</span>
                 <!-- فایل ورودی مخفی برای انتخاب عکس توسط کاربر -->
                 <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="previewImage(event)">
+            </div>
+            <div class="upload-option delete-option" onclick="deleteImage()">
+                <img src="assets/trash-2.svg" class="upload-icon" alt="delete icon">
+                 <span>حذف عکس</span>
             </div>
         </div>
 

@@ -1,353 +1,52 @@
-/* ==========================================
-   ChatInfo.css — اطلاعات چت
-   ========================================== */
+* { box-sizing: border-box; font-family: Tahoma, sans-serif; margin: 0; padding: 0; }
+body { background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; }
 
-.ci-container {
-    max-width: 600px;
-    margin: 0 auto;
-    min-height: 100vh;
-    background: var(--msg-bg, #111b21);
-    display: flex;
-    flex-direction: column;
-    direction: rtl;
-}
+.chat-container { width: 450px; height: 650px; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; }
 
-/* هدر */
-.ci-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 0 16px;
-    height: 60px;
-    background: var(--header-bg, #202c33);
-    border-bottom: 1px solid var(--border, #2a3942);
-    flex-shrink: 0;
-}
+/* بخش سرچ بالای صفحه */
+.search-bar-container { display: flex; background: #fff; border-bottom: 1px solid #ddd; padding: 8px 12px; gap: 10px; align-items: center; }
+.back-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: #555; transform: rotate(180deg); }
+.search-bar-container input { flex: 1; padding: 6px 12px; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 13px; }
 
-.ci-back-btn {
-    width: 36px;
-    height: 36px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-sub, #8696a0);
-    transition: background 0.2s;
-}
+/* هدر چت */
+.chat-header { display: flex; justify-content: space-between; align-items: center; background: #075e54; color: white; padding: 10px 15px; }
+.user-info { display: flex; align-items: center; gap: 12px; cursor: pointer; flex: 1; }
+.avatar { width: 42px; height: 42px; border-radius: 50%; background: #eee; object-fit: cover; }
+.header-text { display: flex; flex-direction: column; }
+.username { font-weight: bold; font-size: 15px; }
+.status-info { font-size: 11px; color: #dfdfdf; margin-top: 2px; }
 
-.ci-back-btn:hover { background: rgba(255,255,255,0.08); }
+/* منوی سه نقطه عمودی */
+.dropdown { position: relative; }
+.menu-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 5px 10px; }
+.dropdown-content { display: none; position: absolute; left: 0; top: 100%; background-color: white; min-width: 180px; box-shadow: 0px 8px 16px rgba(0,0,0,0.15); z-index: 100; border-radius: 6px; overflow: hidden; }
+.dropdown-content a { color: #333; padding: 12px 16px; text-decoration: none; display: block; text-align: right; font-size: 13px; border-bottom: 1px solid #f5f5f5; }
+.dropdown-content a:hover { background-color: #f1f1f1; }
+.show { display: block; }
 
-.ci-header-title {
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--text-name, #fff);
-}
+/* باکس نمایش پیام‌ها */
+.chat-box { flex: 1; padding: 15px; overflow-y: auto; background: #e5ddd5; display: flex; flex-direction: column; gap: 12px; }
+.message { max-width: 80%; padding: 8px 12px; border-radius: 8px; font-size: 13px; display: flex; flex-direction: column; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+.msg-sender-name { font-size: 11px; font-weight: bold; color: #128c7e; margin-bottom: 3px; }
+.msg-inbound { background: white; align-self: flex-start; border-top-right-radius: 0; }
+.msg-outbound { background: #d9fdd3; align-self: flex-end; border-top-left-radius: 0; }
 
-/* پروفایل */
-.ci-profile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 32px 16px 24px;
-    gap: 10px;
-    background: var(--header-bg, #202c33);
-    border-bottom: 1px solid var(--border, #2a3942);
-}
+/* دکمه‌های مدیریت هر پیام */
+.msg-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 5px; border-top: 1px dashed rgba(0,0,0,0.05); padding-top: 3px; }
+.msg-actions button { background: none; border: none; font-size: 11px; cursor: pointer; }
+.btn-delete { color: #ff3b30; }
+.btn-edit { color: #007aff; }
+.btn-report { color: #e67e22; }
 
-.ci-avatar {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    background: var(--primary, #00a884);
-    color: #fff;
-    font-size: 36px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    flex-shrink: 0;
-}
+/* بخش پایینی ارسال پیام */
+.chat-footer { padding: 10px; display: flex; gap: 10px; background: #f0f0f0; align-items: center; }
+.file-label { font-size: 13px; cursor: pointer; color: #555; display: flex; align-items: center; gap: 3px; }
+.chat-footer input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
+.chat-footer button { background: #0084ff; color: white; border: none; padding: 10px 18px; border-radius: 20px; cursor: pointer; font-weight: bold; }
 
-.ci-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.ci-name {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text-name, #fff);
-    text-align: center;
-}
-
-.ci-sub {
-    font-size: 13px;
-    color: var(--text-sub, #8696a0);
-    text-align: center;
-}
-
-/* دکمه‌های سریع */
-.ci-quick-actions {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    padding: 20px 16px;
-    background: var(--header-bg, #202c33);
-    border-bottom: 1px solid var(--border, #2a3942);
-}
-
-.ci-quick-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--primary, #00a884);
-    font-size: 12px;
-    font-family: inherit;
-    transition: opacity 0.2s;
-}
-
-.ci-quick-btn:hover { opacity: 0.8; }
-
-.ci-quick-btn .ci-quick-icon {
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    background: rgba(0,168,132,0.12);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.ci-quick-btn img {
-    width: 22px;
-    height: 22px;
-    filter: brightness(0) saturate(100%)
-            invert(52%) sepia(98%) saturate(374%)
-            hue-rotate(118deg) brightness(96%) contrast(101%);
-}
-
-.ci-quick-btn.active .ci-quick-icon {
-    background: rgba(241,92,109,0.12);
-}
-
-.ci-quick-btn.active {
-    color: var(--danger, #f15c6d);
-}
-
-.ci-quick-btn.active img {
-    filter: brightness(0) saturate(100%)
-            invert(42%) sepia(93%) saturate(500%)
-            hue-rotate(314deg) brightness(100%) contrast(95%);
-}
-
-/* بخش‌های اطلاعات */
-.ci-section {
-    margin-top: 10px;
-    background: var(--header-bg, #202c33);
-    border-top: 1px solid var(--border, #2a3942);
-    border-bottom: 1px solid var(--border, #2a3942);
-}
-
-.ci-section-title {
-    font-size: 13px;
-    color: var(--primary, #00a884);
-    padding: 14px 20px 6px;
-    font-weight: 600;
-}
-
-/* آیتم‌های لیست */
-.ci-list-item {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 12px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    color: var(--text-main, #e9edef);
-    font-size: 14px;
-}
-
-.ci-list-item:last-child { border-bottom: none; }
-
-.ci-list-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--primary, #00a884);
-    color: #fff;
-    font-size: 16px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-/* تاریخچه تب */
-.ci-history-tabs {
-    display: flex;
-    border-bottom: 1px solid var(--border, #2a3942);
-}
-
-.ci-tab {
-    flex: 1;
-    padding: 12px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    color: var(--text-sub, #8696a0);
-    font-family: inherit;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-}
-
-.ci-tab.active {
-    color: var(--primary, #00a884);
-    border-bottom-color: var(--primary, #00a884);
-}
-
-/* آیتم تاریخچه */
-.ci-history-item {
-    padding: 12px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-}
-
-.ci-history-sender {
-    font-size: 12px;
-    color: var(--primary, #00a884);
-    margin-bottom: 4px;
-    font-weight: 600;
-}
-
-.ci-history-content {
-    font-size: 14px;
-    color: var(--text-main, #e9edef);
-}
-
-.ci-history-label {
-    font-size: 11px;
-    color: var(--text-sub, #8696a0);
-    margin-top: 4px;
-}
-
-/* ورودی و دکمه */
-.ci-input {
-    width: 100%;
-    background: var(--sidebar-bg, #1e2a35);
-    border: 1px solid var(--border, #2a3942);
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 14px;
-    color: var(--text-main, #e9edef);
-    direction: rtl;
-    font-family: inherit;
-    outline: none;
-    margin: 10px 20px;
-    width: calc(100% - 40px);
-    box-sizing: border-box;
-}
-
-.ci-edit-group {
-    padding-bottom: 12px;
-}
-
-.ci-btn {
-    border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-size: 14px;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.2s;
-    margin: 0 20px 12px;
-}
-
-.ci-btn-primary {
-    background: var(--primary, #00a884);
-    color: #fff;
-    width: calc(100% - 40px);
-}
-
-.ci-btn-primary:hover { background: var(--primary-hover, #008f70); }
-
-/* خط جدا */
-.ci-divider { height: 10px; background: var(--chat-bg, #0b141a); }
-
-/* دکمه‌های خطرناک */
-.ci-danger-actions {
-    background: var(--header-bg, #202c33);
-    border-top: 1px solid var(--border, #2a3942);
-}
-
-.ci-danger-btn {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 16px 20px;
-    background: none;
-    border: none;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    cursor: pointer;
-    color: var(--danger, #f15c6d);
-    font-size: 15px;
-    font-family: inherit;
-    width: 100%;
-    text-align: right;
-    direction: rtl;
-    transition: background 0.15s;
-}
-
-.ci-danger-btn:hover { background: rgba(241,92,109,0.06); }
-.ci-danger-btn:last-child { border-bottom: none; }
-
-/* مودال */
-.ci-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    z-index: 999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.ci-modal {
-    background: var(--header-bg, #202c33);
-    border-radius: 14px;
-    width: 320px;
-    padding: 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.ci-modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text-name, #fff);
-    direction: rtl;
-}
-
-.ci-modal-header button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
-    color: var(--text-sub, #8696a0);
-}
-
-.ci-modal .ci-input { margin: 0; width: 100%; }
-.ci-modal .ci-btn { margin: 0; width: 100%; }
+/* استایل مۆدال پاپ‌آپ */
+.modal { display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+.modal-content { background-color: white; padding: 20px; border-radius: 10px; width: 400px; max-height: 80vh; overflow-y: auto; text-align: right; position: relative; }
+.close-modal { position: absolute; top: 10px; left: 15px; font-size: 24px; cursor: pointer; color: #aaa; }
+.close-modal:hover { color: black; }
+.history-item { background: #f9f9f9; padding: 8px; margin-top: 6px; border-right: 3px solid #ccc; font-size: 12px; }
