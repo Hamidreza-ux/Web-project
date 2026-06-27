@@ -1,11 +1,23 @@
-const BASE_URL = 'http://localhost:8085'; // آدرس سرور شما
+const BASE_URL = 'http://localhost:8085/api'; 
 
-// دریافت آیدی و نام کاربری از URL (که در MainPage ست شده است)
 const urlParams = new URLSearchParams(window.location.search);
 const CHAT_ID = urlParams.get('chatId'); 
-const USERNAME = localStorage.getItem('username'); // نام کاربری را از حافظه محلی می‌خوانیم
+const USERNAME = localStorage.getItem('username'); 
 
-// اجرای خودکار هنگام باز شدن صفحه
+async function loadMessages() {
+    try {
+        const response = await fetch(`${BASE_URL}/message`, {
+            method: 'GET',
+            headers: { 
+                'X-Username': USERNAME, 
+                'X-Chat-Id': CHAT_ID 
+            }
+        });
+    } catch (e) { 
+        console.error(e); 
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     if (!CHAT_ID) {
         console.error("آیدی چت یافت نشد، بازگشت به صفحه اصلی...");
@@ -13,11 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
     
-    // بارگذاری اطلاعات چت
     loadChatInfo();
 });
 
-// تابع اصلاح شده برای بارگذاری اطلاعات بر اساس CHAT_ID
 async function loadChatInfo() {
     try {
         const response = await fetch(`${BASE_URL}/chat-info`, {
@@ -31,16 +41,19 @@ async function loadChatInfo() {
         if (response.ok) {
             const chatRoom = await response.json();
             
-            // تنظیم نام و آواتار در هدر (طبق IDهای HTML شما)
-            document.getElementById('chat-name').innerText = chatRoom.name;
-            document.getElementById('chat-avatar').src = chatRoom.avatarUrl;
+            // مقداردهی متغیر برای استفاده در تمام توابع
+            isGroupChat = chatRoom.isGroup;
             
-            // نمایش وضعیت
-            if (chatRoom.isGroup) {
+            document.getElementById('chat-name').innerText = chatRoom.name;
+            document.getElementById('chat-avatar').src = chatRoom.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${chatRoom.name}`;
+            
+            if (isGroupChat) {
                 document.getElementById('chat-status').innerText = `${chatRoom.memberCount || 0} عضو`;
             } else {
                 document.getElementById('chat-status').innerText = chatRoom.isBlocked ? "بلاک شده" : "آنلاین";
             }
+            
+            setupThreeDotMenu();
         } else {
             console.error("خطا در دریافت اطلاعات چت از سرور");
         }
@@ -54,7 +67,6 @@ function setupThreeDotMenu() {
     menuContainer.innerHTML = '';
 
     if (isGroupChat) {
-        // قابلیت‌های مخصوص چت گروهی طبق تصویر داکیومنت
         menuContainer.innerHTML = `
             <a href="#" onclick="triggerAction('leave')">ترک گروه</a>
             <a href="#" onclick="promptAddMember()">افزودن عضو</a>
@@ -63,7 +75,6 @@ function setupThreeDotMenu() {
             <a href="#" onclick="loadGroupHistory()">تاریخچه تغییرات</a>
         `;
     } else {
-        // قابلیت‌های مخصوص چت شخصی طبق تصویر داکیومنت
         menuContainer.innerHTML = `
             <a href="#" onclick="triggerAction('block')">بلاک کردن کاربر</a>
             <a href="#" onclick="triggerAction('add_contact')">اضافه کردن به مخاطبین</a>
@@ -79,12 +90,11 @@ function toggleMenu(e) {
 
 window.onclick = () => document.getElementById("chat-options-menu").classList.remove("show");
 
-// مدیریت دریافت و ارسال پیام‌ها (ChatPageWebHandler)
 async function loadMessages() {
-    const searchVal = document.getElementById('search-input').value;
+    const searchVal = document.getElementById('search-input')?.value || '';
     try {
         const headers = { 'X-Username': USERNAME, 'X-Chat-Id': CHAT_ID };
-        if (searchVal) headers['X-Search-Msg'] = searchVal; // قابلیت سرچ
+        if (searchVal) headers['X-Search-Msg'] = searchVal;
 
         const response = await fetch(`${BASE_URL}/chat-page`, { method: 'GET', headers: headers });
         if (response.ok) {
@@ -96,11 +106,9 @@ async function loadMessages() {
                 const msgDiv = document.createElement('div');
                 msgDiv.classList.add('message', msg.sender === USERNAME ? 'msg-outbound' : 'msg-inbound');
 
-                // اگر چت گروهی بود، نام فرستنده را بالای پیام بنویس
                 let senderHeader = (isGroupChat && msg.sender !== USERNAME) ? `<span class="msg-sender-name">${msg.sender}</span>` : '';
                 let fileTag = msg.isFile ? '📁 [فایل رسانه] ' : '';
 
-                // دکمه‌های عملیاتی حذف، ویرایش یا گزارش پیام
                 let actionButtons = '';
                 if (msg.sender === USERNAME) {
                     actionButtons = `
@@ -128,21 +136,20 @@ async function loadMessages() {
 const fileAttachBtn = document.getElementById('fileAttachBtn');
 const fileInput = document.getElementById('fileInput');
 
-// باز کردن دیالوگ انتخاب فایل با کلیک روی آیکون
 fileAttachBtn.addEventListener('click', () => {
     fileInput.click();
 });
 
-// هندل کردن انتخاب فایل
 fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
-        // در اینجا می‌توانید درخواست API برای آپلود فایل به ChatPageWebHandler بفرستید
+        // تغییر نام متغیر از chatBody به chatBox جهت همخوانی با کدهای شما
+        const chatBox = document.getElementById('chat-box');
         const msg = document.createElement('div');
-        msg.className = 'message outbound';
+        msg.className = 'message msg-outbound';
         msg.innerHTML = `<span>📁 فایل پیوست: ${file.name}</span>`;
-        chatBody.appendChild(msg);
-        chatBody.scrollTop = chatBody.scrollHeight;
+        chatBox.appendChild(msg);
+        chatBox.scrollTop = chatBox.scrollHeight;
     }
 });
 
@@ -165,16 +172,13 @@ async function sendMessage() {
             loadMessages();
         } else {
             const err = await response.json();
-            alert(err.message); // مدیریت خطای اسپم (بیش از ۵ پیام در ثانیه) یا پیام طولانی
+            alert(err.message);
         }
     } catch (error) {
         console.error(error);
     }
 }
 
-// ==========================================
-// ۳. حذف، ویرایش و گزارش پیام‌ها (PUT / DELETE)
-// ==========================================
 async function deleteMessage(messageId) {
     if (!confirm("آیا مایل به حذف پیام هستید؟")) return;
     const response = await fetch(`${BASE_URL}/chat-page`, {
@@ -207,9 +211,6 @@ async function reportMessage(messageId) {
     alert(res.message);
 }
 
-// ==========================================
-// ۴. هندل کردن عملیات‌های دکمه سه نقطه (ChatInfoWebHandler POST)
-// ==========================================
 async function triggerAction(actionName, extraData = {}) {
     try {
         const response = await fetch(`${BASE_URL}/chat-info`, {
@@ -236,9 +237,6 @@ function promptEditGroup() {
     if (newName && newAvatar) triggerAction('edit_group', { newName: newName, newAvatar: newAvatar });
 }
 
-// ==========================================
-// ۵. صفحه مۆدال اطلاعات چت و تاریخچه تغییرات گروه (X-Get-History)
-// ==========================================
 async function openInfoModal() {
     const modal = document.getElementById('info-modal');
     const detailsDiv = document.getElementById('modal-details');
@@ -254,14 +252,12 @@ async function openInfoModal() {
             document.getElementById('modal-title').innerText = data.name;
             
             if (data.isGroup) {
-                // نمایش اطلاعات گروه بر اساس تصویر نیازمندی‌ها
                 detailsDiv.innerHTML = `
                     <p><b>نوع گفتگو:</b> گروه چت</p>
                     <p><b>آیدی گروه:</b> ${data.id}</p>
                     <p><b>تعداد کل اعضا:</b> ${data.memberCount} نفر</p>
                 `;
             } else {
-                // نمایش اطلاعات حساب شخصی همراه گروه‌های مشترک بر اساس تصویر نیازمندی‌ها
                 detailsDiv.innerHTML = `
                     <p><b>نام کاربری:</b> @${data.username}</p>
                     <p><b>وضعیت بلاک:</b> ${data.isBlocked ? 'شما این کاربر را بلاک کرده‌اید' : 'بلاک نشده'}</p>
@@ -273,9 +269,8 @@ async function openInfoModal() {
     } catch (e) { console.error(e); }
 }
 
-// دریافت تاریخچه پیام‌های حذف شده و ورژن قبلی پیام‌های ویرایش شده (ویژه گروه)
 async function loadGroupHistory() {
-    openInfoModal(); // ابتدا مودال باز شود
+    openInfoModal();
     const historySection = document.getElementById('modal-history-section');
     const listDiv = document.getElementById('history-lists');
     listDiv.innerHTML = 'در حال بارگذاری تاریخچه...';
@@ -290,7 +285,7 @@ async function loadGroupHistory() {
             const historyData = await response.json();
             listDiv.innerHTML = '';
 
-            listDiv.innerHTML += '<h5>❌ پیام‌های حذف شده:</h5>';
+            listDiv.innerHTML += '<h5>پیام‌های حذف شده:</h5>';
             if (historyData.deletedMessages.length === 0) listDiv.innerHTML += '<p>پیامی حذف نشده است.</p>';
             historyData.deletedMessages.forEach(m => {
                 listDiv.innerHTML += `<div class="history-item"><b>${m.sender}:</b> ${m.content}</div>`;
@@ -299,16 +294,19 @@ async function loadGroupHistory() {
             listDiv.innerHTML += '<h5 style="margin-top:15px;">📝 پیام‌های ویرایش شده (نسخه قبل):</h5>';
             if (historyData.editedMessages.length === 0) listDiv.innerHTML += '<p>پیامی ویرایش نشده است.</p>';
             historyData.editedMessages.forEach(m => {
-                listDiv.innerHTML += `<div class="history-item"><b>متن فعلی:</b> ${m.currentContent}<br><span style="color:red"><b>نسخه اولیه:</b> ${m.previousVersion}</span></div>`;
+                listDiv.innerHTML += `
+                <div class="history-item">
+                    <div class="current-text"><b>متن فعلی:</b> ${m.currentContent}</div>
+                    <div class="old-text" style="color:red"><b>نسخه اولیه:</b> ${m.previousVersion}</div>
+                </div>`;
             });
         }
     } catch (e) { console.error(e); }
 }
 
 function closeInfoModal() { document.getElementById('info-modal').style.display = 'none'; }
-function goBack() { alert("بازگشت به صفحه اصلی چت‌ها (لیست گفتگوها)"); }
+function goBack() { alert("بازگشت به صفحه اصلی چت‌ها "); }
 
-// لود همزمان اطلاعات کلی چت و لیست پیام‌ها هنگام ورود به صفحه
 window.onload = () => {
     loadChatInfo();
     loadMessages();
