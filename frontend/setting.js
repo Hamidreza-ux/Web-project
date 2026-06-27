@@ -46,11 +46,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // ذخیره نام
-        saveNameBtn.addEventListener('click', function () {
-            const newName = editNameInput.value.trim();
+        saveNameBtn.addEventListener('click', async function () {
+        const newName = editNameInput.value.trim();
             if (newName) {
-                localStorage.setItem('userName', newName);
-                window.location.href = 'Setting.html';
+            await fetch('http://localhost:8080/settings', {
+                 method: 'POST',
+                 headers: { 'Content-Type': 'application/json', 'X-Username': localStorage.getItem('userUsername') },
+                 body: JSON.stringify({ action: 'change_id', newId: newName })
+            });
+            localStorage.setItem('userName', newName);
+            window.location.href = 'Setting.html';
             }
         });
     }
@@ -77,12 +82,17 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // ذخیره شناسه
-        saveUsernameBtn.addEventListener('click', function () {
-            const newUsername = editUsernameInput.value.trim();
-            if (newUsername) {
-                localStorage.setItem('userUsername', newUsername);
-                window.location.href = 'Setting.html';
-            }
+        saveUsernameBtn.addEventListener('click', async function () {
+        const newUsername = editUsernameInput.value.trim();  // ✅ اول مقدار رو بگیر
+            if (!newUsername) return;
+            const res = await fetch('http://localhost:8080/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Username': localStorage.getItem('userUsername') },
+                body: JSON.stringify({ action: 'change_id', newId: newUsername })
+            });
+             if (res.status === 409) { alert('این شناسه قبلاً گرفته شده!'); return; }
+            localStorage.setItem('userUsername', newUsername);
+            window.location.href = 'Setting.html';
         });
     }
 
@@ -153,5 +163,27 @@ function saveTheme() {
     if (checked) {
         localStorage.setItem('appTheme', checked.value);
         window.location.href = 'Setting.html';
+    }
+}
+
+async function deleteAccount() {
+    if (!confirm('آیا از حذف حساب خود مطمئن هستید؟')) return;
+
+    const res = await fetch('http://localhost:8080/settings', {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Username': localStorage.getItem('userUsername')
+        }
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+        localStorage.clear();
+        alert(data.message);
+        window.location.href = 'index.html';
+    } else {
+        alert(data.message);
     }
 }
