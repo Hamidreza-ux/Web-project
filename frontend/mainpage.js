@@ -277,36 +277,13 @@ async function updateArchiveRow() {
     }
 }
 
-async function openChat(chatId, chatName, isGroup) {
-    state.activeChatId = chatId;
-    state.activeChatName = chatName;
-    state.activeIsGroup = isGroup;
-    state.editingMsgId = null;
-
-    // active class
-    document.querySelectorAll('.chat-item').forEach(el => {
-        el.classList.toggle('active', el.dataset.chatId === chatId);
-    });
-
-    // نمایش پنجره چت
-    document.getElementById('welcomeScreen').style.display = 'none';
-    document.getElementById('chatWindow').style.display = 'flex';
-
-    // هدر پنجره چت
-    document.getElementById('cwhName').textContent = chatName;
-    document.getElementById('cwhAvatar').textContent = chatName.charAt(0).toUpperCase();
-    document.getElementById('cwhAvatar').style.background = stringToColor(chatName);
-    document.getElementById('cwhStatus').textContent = isGroup ? 'گروه' : '';
-
-    // بارگذاری پیام‌ها
-    await loadMessages();
-
-    // polling
-    if (state.pollInterval) clearInterval(state.pollInterval);
-    state.pollInterval = setInterval(loadMessages, 3000);
-
-    // بستن search overlay در موبایل
-    closeSearchOverlay();
+// این تابع را در mainpage.js پیدا کرده و به شکل زیر اصلاح کنید
+function openChat(chatId, chatName, isGroup) {
+    // ذخیره آیدی در localStorage برای دسترسی راحت‌تر
+    localStorage.setItem('activeChatId', chatId);
+    
+    // هدایت به صفحه چت با پاس دادن آیدی در URL
+    window.location.href = `ChatPage.html?chatId=${encodeURIComponent(chatId)}`;
 }
 
 async function loadMessages(searchQuery = '') {

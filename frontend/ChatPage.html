@@ -5,54 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChatPage</title>
     <link rel="stylesheet" href="ChatPage.css">
-    <script src="Chatpage.js" defer></script>
 </head>
 <body>
 
-<div class="chat-container">
-    <div class="search-bar-container">
-        <button class="back-btn" onclick="goBack()">&#10142;</button>
-        <input type="text" id="search-input" placeholder="جستجو بین پیام‌ها..." oninput="loadMessages()">
-    </div>
-
-    <div class="chat-header">
-        <div class="user-info" onclick="openInfoModal()">
-            <img class="avatar" id="chat-avatar" src="" alt="Avatar">
-            <div class="header-text">
-                <span class="username" id="chat-name">بارگذاری...</span>
-                <span class="status-info" id="chat-status"></span>
+<div class="chat-wrapper">
+    <!-- هدر چت طبق تصویر -->
+    <header class="chat-header">
+        <div class="user-info">
+            <button class="back-btn" onclick="goBack()">←</button>
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" id="chat-avatar" alt="avatar" class="avatar">
+            <div class="user-details">
+                <span class="user-name" id="chat-name">نام مخاطب/گروه</span>
+                <span class="status" id="chat-status">آنلاین</span>
             </div>
         </div>
-        
-        <div class="dropdown">
-            <button onclick="toggleMenu(event)" class="menu-btn">&#8942;</button>
-            <div id="chat-options-menu" class="dropdown-content"></div>
-        </div>
-    </div>
+        <button class="menu-btn" onclick="toggleMenu(event)">⋮</button>
+        <div id="chat-options-menu" class="dropdown-content"></div>
+    </header>
 
-    <div class="chat-box" id="chat-box"></div>
+    <!-- ناحیه پیام‌ها -->
+    <main class="chat-body" id="chat-box"></main>
 
-    <div class="chat-footer">
-        <label class="file-label">
-            <input type="checkbox" id="file-checkbox"> 📁 فایل
-        </label>
-        <input type="text" id="msg-input" placeholder="پیام خود را بنویسید...">
-        <button onclick="sendMessage()">ارسال</button>
-    </div>
+    <!-- فوتر با قابلیت ارسال فایل -->
+    <footer class="chat-footer">
+        <button class="file-attach-btn" id="fileAttachBtn">📎</button>
+        <input type="file" id="fileInput" style="display: none;">
+        <input type="text" placeholder="نوشتن پیام..." class="message-input" id="msg-input">
+        <input type="checkbox" id="file-checkbox" style="display:none;">
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">ارسال</button>
+    </footer>
 </div>
 
-<div id="info-modal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="closeInfoModal()">&times;</span>
-        <h3 id="modal-title">اطلاعات</h3>
-        <div id="modal-details"></div>
-        <div id="modal-history-section" style="display:none;">
-            <h4>تاریخچه گفتگو (پیام‌های حذف شده و نسخه‌های قبل ویرایش)</h4>
-            <div id="history-lists"></div>
-        </div>
-    </div>
-</div>
-
-<script src="app.js"></script>
+<script src="Chatpage.js"></script>
 </body>
 </html>

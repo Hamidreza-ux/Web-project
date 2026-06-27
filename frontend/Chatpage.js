@@ -1,36 +1,51 @@
-const BASE_URL = 'http://localhost:8085';
-const USERNAME = 'my_user_id';  //       نام کاربری احراز هویت شده
-const CHAT_ID = 'chat_room_id'; // می‌تواند آیدی کاربر مقابل یا آیدی گروه باشد
+const BASE_URL = 'http://localhost:8085'; // آدرس سرور شما
 
-let isGroupChat = false;
+// دریافت آیدی و نام کاربری از URL (که در MainPage ست شده است)
+const urlParams = new URLSearchParams(window.location.search);
+const CHAT_ID = urlParams.get('chatId'); 
+const USERNAME = localStorage.getItem('username'); // نام کاربری را از حافظه محلی می‌خوانیم
 
-// ۱. بارگذاری اطلاعات اتاق چت و تنظیم هدر و منو
+// اجرای خودکار هنگام باز شدن صفحه
+document.addEventListener('DOMContentLoaded', () => {
+    if (!CHAT_ID) {
+        console.error("آیدی چت یافت نشد، بازگشت به صفحه اصلی...");
+        window.location.href = 'MainPage.html';
+        return;
+    }
+    
+    // بارگذاری اطلاعات چت
+    loadChatInfo();
+});
+
+// تابع اصلاح شده برای بارگذاری اطلاعات بر اساس CHAT_ID
 async function loadChatInfo() {
     try {
         const response = await fetch(`${BASE_URL}/chat-info`, {
             method: 'GET',
-            headers: { 'X-Username': USERNAME, 'X-Chat-Id': CHAT_ID }
+            headers: { 
+                'X-Username': USERNAME, 
+                'X-Chat-Id': CHAT_ID 
+            }
         });
 
         if (response.ok) {
             const chatRoom = await response.json();
-            isGroupChat = chatRoom.isGroup; // تعیین نوع چت
             
-            // تنظیم هدر صفحه چت
+            // تنظیم نام و آواتار در هدر (طبق IDهای HTML شما)
             document.getElementById('chat-name').innerText = chatRoom.name;
             document.getElementById('chat-avatar').src = chatRoom.avatarUrl;
             
-            if (isGroupChat) {
-                document.getElementById('chat-status').innerText = `${chatRoom.memberCount} عضو`;
+            // نمایش وضعیت
+            if (chatRoom.isGroup) {
+                document.getElementById('chat-status').innerText = `${chatRoom.memberCount || 0} عضو`;
             } else {
-                document.getElementById('chat-status').innerText = chatRoom.isBlocked ? "بلاک شده" : "آنلاین / چت شخصی";
+                document.getElementById('chat-status').innerText = chatRoom.isBlocked ? "بلاک شده" : "آنلاین";
             }
-
-            // پر کردن داینامیک گزینه‌های منوی سه نقطه بر اساس عکس نیازمندی‌ها
-            setupThreeDotMenu();
+        } else {
+            console.error("خطا در دریافت اطلاعات چت از سرور");
         }
     } catch (error) {
-        console.error('خطا در بارگذاری اطلاعات چت:', error);
+        console.error("خطای شبکه:", error);
     }
 }
 
@@ -64,9 +79,7 @@ function toggleMenu(e) {
 
 window.onclick = () => document.getElementById("chat-options-menu").classList.remove("show");
 
-// ==========================================
-// ۲. مدیریت دریافت و ارسال پیام‌ها (ChatPageWebHandler)
-// ==========================================
+// مدیریت دریافت و ارسال پیام‌ها (ChatPageWebHandler)
 async function loadMessages() {
     const searchVal = document.getElementById('search-input').value;
     try {
@@ -111,6 +124,27 @@ async function loadMessages() {
         console.error(error);
     }
 }
+
+const fileAttachBtn = document.getElementById('fileAttachBtn');
+const fileInput = document.getElementById('fileInput');
+
+// باز کردن دیالوگ انتخاب فایل با کلیک روی آیکون
+fileAttachBtn.addEventListener('click', () => {
+    fileInput.click();
+});
+
+// هندل کردن انتخاب فایل
+fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        // در اینجا می‌توانید درخواست API برای آپلود فایل به ChatPageWebHandler بفرستید
+        const msg = document.createElement('div');
+        msg.className = 'message outbound';
+        msg.innerHTML = `<span>📁 فایل پیوست: ${file.name}</span>`;
+        chatBody.appendChild(msg);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+});
 
 async function sendMessage() {
     const input = document.getElementById('msg-input');
