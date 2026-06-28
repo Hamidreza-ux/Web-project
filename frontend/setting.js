@@ -182,7 +182,7 @@ async function deleteAccount() {
     if (res.ok) {
         localStorage.clear();
         alert(data.message);
-        window.location.href = 'index.html';
+        window.location.href = 'login.html';
     } else {
         alert(data.message);
     }
